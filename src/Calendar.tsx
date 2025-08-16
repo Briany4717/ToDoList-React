@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { CalendarProps } from './types';
 
-
-export const Calendar = ({ onDateSelect, selectedDate }) => {
+export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
 
     // Obtener información del mes actual
@@ -34,8 +34,8 @@ export const Calendar = ({ onDateSelect, selectedDate }) => {
     };
 
     // Generar array de días del mes
-    const generateCalendarDays = () => {
-        const days = [];
+    const generateCalendarDays = (): (number | null)[] => {
+        const days: (number | null)[] = [];
 
         // Días vacíos al inicio
         for (let i = 0; i < adjustedStartingDay; i++) {
@@ -52,18 +52,20 @@ export const Calendar = ({ onDateSelect, selectedDate }) => {
 
     const calendarDays = generateCalendarDays();
 
-    const isPast = (day) => {
+    const isPast = (day: number | null): boolean => {
+        if (!day) return false;
         return (today.getDate() > day && today.getMonth() === currentMonth && today.getFullYear() === currentYear) || (today.getMonth() > currentMonth && today.getFullYear() === currentYear) || (today.getFullYear() > currentYear);
     };
     // Verificar si es el día actual
-    const isToday = (day) => {
+    const isToday = (day: number | null): boolean => {
+        if (!day) return false;
         return today.getDate() === day &&
             today.getMonth() === currentMonth &&
             today.getFullYear() === currentYear;
     };
 
     // Verificar si es el día seleccionado
-    const isSelected = (day) => {
+    const isSelected = (day: number | null): boolean => {
         if (!selectedDate || !day) return false;
         return selectedDate.getDate() === day &&
             selectedDate.getMonth() === currentMonth &&
@@ -71,7 +73,7 @@ export const Calendar = ({ onDateSelect, selectedDate }) => {
     };
 
     // Manejar selección de día
-    const handleDayClick = (day) => {
+    const handleDayClick = (day: number | null): void => {
         if (day && onDateSelect) {
             const newSelectedDate = new Date(currentYear, currentMonth, day);
             onDateSelect(newSelectedDate);

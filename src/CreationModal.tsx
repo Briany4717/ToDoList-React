@@ -1,6 +1,16 @@
 
+import React from 'react';
+import { CreationModalProps } from './types';
 
-export const CreationModal = ({ handleCreateTask, closeCreate, firstInputRef, newTitle, setNewTitle, newDescription, setNewDescription }) => {
+export const CreationModal: React.FC<CreationModalProps> = ({ 
+    handleCreateTask, 
+    closeCreate, 
+    firstInputRef, 
+    newTitle, 
+    setNewTitle, 
+    newDescription, 
+    setNewDescription 
+}) => {
     return (<div className='fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
         <form
             onSubmit={handleCreateTask}
@@ -20,7 +30,7 @@ export const CreationModal = ({ handleCreateTask, closeCreate, firstInputRef, ne
                     <input
                         ref={firstInputRef}
                         value={newTitle}
-                        onChange={e => setNewTitle(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTitle(e.target.value)}
                         className='border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
                         placeholder='Ej: Revisar correo'
                         maxLength={70}
@@ -30,7 +40,7 @@ export const CreationModal = ({ handleCreateTask, closeCreate, firstInputRef, ne
                 <label className='flex flex-col gap-1 text-sm font-medium'>Descripción
                     <textarea
                         value={newDescription}
-                        onChange={e => setNewDescription(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewDescription(e.target.value)}
                         className='border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 resize-none h-24'
                         placeholder='Detalles opcionales'
                         maxLength={250}

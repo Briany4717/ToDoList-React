@@ -1,10 +1,32 @@
-const express = require('express');
-const Database = require('better-sqlite3');
-const cors = require('cors');
-const path = require('path');
+import express, { Request, Response, Application } from 'express';
+import Database from 'better-sqlite3';
+import cors from 'cors';
+import path from 'path';
 
-const app = express();
-const PORT = 3001;
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  isCompleted: boolean;
+  accent: string;
+  createdAt: string;
+}
+
+interface CreateTaskRequest {
+  title: string;
+  description?: string;
+  accent?: string;
+}
+
+interface UpdateTaskRequest {
+  title: string;
+  description?: string;
+  isCompleted?: boolean;
+  accent?: string;
+}
+
+const app: Application = express();
+const PORT: number = 3001;
 
 // Middleware
 app.use(cors());
@@ -26,8 +48,8 @@ db.exec(`
 `);
 
 // Insertar datos de ejemplo si la tabla está vacía
-const insertInitialData = () => {
-  const count = db.prepare('SELECT COUNT(*) as count FROM tasks').get();
+const insertInitialData = (): void => {
+  const count = db.prepare('SELECT COUNT(*) as count FROM tasks').get() as { count: number };
   if (count.count === 0) {
     const insert = db.prepare(`
       INSERT INTO tasks (title, description, isCompleted, accent) 
@@ -136,22 +158,23 @@ const toggleTask = db.prepare('UPDATE tasks SET isCompleted = ? WHERE id = ?');
 // Rutas API
 
 // GET /api/tasks - Obtener todas las tareas
-app.get('/api/tasks', (req, res) => {
+app.get('/api/tasks', (req: Request, res: Response) => {
   try {
-    const tasks = getAllTasks.all().map(task => ({
+    const tasks = getAllTasks.all() as Task[];
+    const formattedTasks = tasks.map((task: Task) => ({
       ...task,
       isCompleted: Boolean(task.isCompleted)
     }));
-    res.json(tasks);
-  } catch (error) {
+    res.json(formattedTasks);
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // GET /api/tasks/:id - Obtener una tarea específica
-app.get('/api/tasks/:id', (req, res) => {
+app.get('/api/tasks/:id', (req: Request, res: Response) => {
   try {
-    const task = getTaskById.get(req.params.id);
+    const task = getTaskById.get(req.params.id) as Task | undefined;
     if (!task) {
       return res.status(404).json({ error: 'Tarea no encontrada' });
     }
@@ -159,37 +182,37 @@ app.get('/api/tasks/:id', (req, res) => {
       ...task,
       isCompleted: Boolean(task.isCompleted)
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // POST /api/tasks - Crear nueva tarea
-app.post('/api/tasks', (req, res) => {
+app.post('/api/tasks', (req: Request, res: Response) => {
   try {
-    const { title, description = '', accent = '#87a1fd' } = req.body;
+    const { title, description = '', accent = '#87a1fd' }: CreateTaskRequest = req.body;
 
     if (!title || title.trim() === '') {
       return res.status(400).json({ error: 'El título es requerido' });
     }
 
     const result = insertTask.run(title.trim(), description.trim(), 0, accent);
-    const newTask = getTaskById.get(result.lastInsertRowid);
+    const newTask = getTaskById.get(result.lastInsertRowid) as Task;
 
     res.status(201).json({
       ...newTask,
       isCompleted: Boolean(newTask.isCompleted)
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // PUT /api/tasks/:id - Actualizar tarea completa
-app.put('/api/tasks/:id', (req, res) => {
+app.put('/api/tasks/:id', (req: Request, res: Response) => {
   try {
-    const { title, description, isCompleted, accent } = req.body;
-    const id = req.params.id;
+    const { title, description, isCompleted, accent }: UpdateTaskRequest = req.body;
+    const id: string = req.params.id;
 
     if (!title || title.trim() === '') {
       return res.status(400).json({ error: 'El título es requerido' });
@@ -207,21 +230,21 @@ app.put('/api/tasks/:id', (req, res) => {
       return res.status(404).json({ error: 'Tarea no encontrada' });
     }
 
-    const updatedTask = getTaskById.get(id);
+    const updatedTask = getTaskById.get(id) as Task;
     res.json({
       ...updatedTask,
       isCompleted: Boolean(updatedTask.isCompleted)
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // PATCH /api/tasks/:id/toggle - Toggle estado completado
-app.patch('/api/tasks/:id/toggle', (req, res) => {
+app.patch('/api/tasks/:id/toggle', (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
-    const currentTask = getTaskById.get(id);
+    const id: string = req.params.id;
+    const currentTask = getTaskById.get(id) as Task | undefined;
 
     if (!currentTask) {
       return res.status(404).json({ error: 'Tarea no encontrada' });
@@ -234,18 +257,18 @@ app.patch('/api/tasks/:id/toggle', (req, res) => {
       return res.status(404).json({ error: 'Tarea no encontrada' });
     }
 
-    const updatedTask = getTaskById.get(id);
+    const updatedTask = getTaskById.get(id) as Task;
     res.json({
       ...updatedTask,
       isCompleted: Boolean(updatedTask.isCompleted)
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // DELETE /api/tasks/:id - Eliminar tarea
-app.delete('/api/tasks/:id', (req, res) => {
+app.delete('/api/tasks/:id', (req: Request, res: Response) => {
   try {
     const result = deleteTask.run(req.params.id);
 
@@ -254,13 +277,13 @@ app.delete('/api/tasks/:id', (req, res) => {
     }
 
     res.json({ message: 'Tarea eliminada correctamente' });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // Manejo de errores 404
-app.use('*', (req, res) => {
+app.use('*', (req: Request, res: Response) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
