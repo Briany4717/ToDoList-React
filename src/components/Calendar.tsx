@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CalendarProps } from './types';
+import { CalendarProps } from '../types';
 
 export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -25,11 +25,11 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
     const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
 
     // Función para navegar entre meses
-    const goToPreviousMonth = () => {
+    const goToPreviousMonth = (): void => {
         setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
     };
 
-    const goToNextMonth = () => {
+    const goToNextMonth = (): void => {
         setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
     };
 
@@ -54,8 +54,11 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
 
     const isPast = (day: number | null): boolean => {
         if (!day) return false;
-        return (today.getDate() > day && today.getMonth() === currentMonth && today.getFullYear() === currentYear) || (today.getMonth() > currentMonth && today.getFullYear() === currentYear) || (today.getFullYear() > currentYear);
+        return (today.getDate() > day && today.getMonth() === currentMonth && today.getFullYear() === currentYear) || 
+               (today.getMonth() > currentMonth && today.getFullYear() === currentYear) || 
+               (today.getFullYear() > currentYear);
     };
+
     // Verificar si es el día actual
     const isToday = (day: number | null): boolean => {
         if (!day) return false;
@@ -81,24 +84,28 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
     };
 
     return (
-        <div className='flex flex-col h-min items-center p-6 rounded-4xl m-4 min-w-80'>
+        <div className='flex flex-col h-min items-center p-6 rounded-4xl m-4 min-w-80 bg-white shadow-sm border border-gray-200'>
             {/* Header del calendario */}
             <div className='flex items-center justify-between w-full mb-4'>
-                <span
+                <button
                     onClick={goToPreviousMonth}
-                    className='material-symbols-rounded cursor-pointer hover:text-blue-400 transition-colors duration-200 text-2xl'
+                    className='material-symbols-rounded cursor-pointer hover:text-blue-400 transition-colors duration-200 text-2xl p-1 rounded hover:bg-gray-100'
+                    type="button"
+                    aria-label="Mes anterior"
                 >
                     chevron_left
-                </span>
-                <span className='cursor-default text-xl font-semibold'>
+                </button>
+                <h3 className='cursor-default text-xl font-semibold text-gray-800'>
                     {monthNames[currentMonth]} {currentYear}
-                </span>
-                <span
+                </h3>
+                <button
                     onClick={goToNextMonth}
-                    className='material-symbols-rounded cursor-pointer hover:text-blue-400 transition-colors duration-200 text-2xl'
+                    className='material-symbols-rounded cursor-pointer hover:text-blue-400 transition-colors duration-200 text-2xl p-1 rounded hover:bg-gray-100'
+                    type="button"
+                    aria-label="Mes siguiente"
                 >
                     chevron_right
-                </span>
+                </button>
             </div>
 
             {/* Días de la semana */}
@@ -113,22 +120,26 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
             {/* Días del mes */}
             <div className='grid grid-cols-7 gap-2 w-full'>
                 {calendarDays.map((day, index) => (
-                    <div
+                    <button
                         key={index}
                         onClick={() => handleDayClick(day)}
+                        disabled={!day}
                         className={`
-              h-10 w-10 flex items-center justify-center text-sm rounded-lg transition-all duration-200
-              ${day ? 'cursor-pointer hover:bg-gray-600' : ''}
-              ${isPast(day) ? 'opacity-50' : ''}
-              ${day && isToday(day) ? 'bg-blue-500 text-white font-bold hover:bg-blue-600' : ''}
-              ${day && isSelected(day) && !isToday(day) ? 'bg-green-500 text-white font-bold hover:bg-green-600' : ''}
-              ${day && !isToday(day) && !isSelected(day) ? 'text-gray-900 hover:text-white' : ''}
-            `}
+                            h-10 w-10 flex items-center justify-center text-sm rounded-lg transition-all duration-200
+                            ${day ? 'cursor-pointer hover:bg-gray-600' : 'cursor-default'}
+                            ${isPast(day) ? 'opacity-50' : ''}
+                            ${day && isToday(day) ? 'bg-blue-500 text-white font-bold hover:bg-blue-600' : ''}
+                            ${day && isSelected(day) && !isToday(day) ? 'bg-green-500 text-white font-bold hover:bg-green-600' : ''}
+                            ${day && !isToday(day) && !isSelected(day) ? 'text-gray-900 hover:text-white' : ''}
+                            disabled:cursor-default disabled:hover:bg-transparent
+                        `}
+                        type="button"
+                        aria-label={day ? `Día ${day}` : undefined}
                     >
                         {day}
-                    </div>
+                    </button>
                 ))}
             </div>
         </div>
     );
-}
+};
