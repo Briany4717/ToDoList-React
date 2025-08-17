@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
+
+// API
+import { tasksService } from '../api';
+import { generateRandomAccent } from '../api/config';
+
+// Types
 import { Task, TaskAction } from '../types';
-import { tasksAPI, generateRandomAccent } from '../api';
 
 // Reducer para manejar el estado de las tareas
 function tasksReducer(state: Task[], action: TaskAction): Task[] {
@@ -9,9 +14,7 @@ function tasksReducer(state: Task[], action: TaskAction): Task[] {
       return action.tasks;
     case 'toggle':
       return state.map((task: Task) =>
-        task.id === action.id
-          ? { ...task, isCompleted: action.isCompleted }
-          : task
+        task.id === action.id ? { ...task, isCompleted: action.isCompleted } : task
       );
     case 'add':
       return [...state, action.task];
@@ -37,7 +40,7 @@ export const useTasks = () => {
       try {
         setLoading(true);
         setError(null);
-        const tasksFromDB = await tasksAPI.getAll();
+        const tasksFromDB = await tasksService.getAll();
         dispatch({ type: 'set_all', tasks: tasksFromDB });
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -53,11 +56,11 @@ export const useTasks = () => {
   // Alternar estado de completado
   const toggleTask = useCallback(async (taskId: number): Promise<void> => {
     try {
-      const updatedTask = await tasksAPI.toggle(taskId);
+      const updatedTask = await tasksService.toggle(taskId);
       dispatch({
         type: 'toggle',
         id: taskId,
-        isCompleted: updatedTask.isCompleted
+        isCompleted: updatedTask.isCompleted,
       });
     } catch (err: unknown) {
       console.error('Error toggleando tarea:', err);
@@ -73,10 +76,10 @@ export const useTasks = () => {
       const newTask = {
         title: title.trim(),
         description: description.trim() || 'Sin descripción',
-        accent: generateRandomAccent()
+        accent: generateRandomAccent(),
       };
 
-      const createdTask = await tasksAPI.create(newTask);
+      const createdTask = await tasksService.create(newTask);
       dispatch({ type: 'add', task: createdTask });
     } catch (err: unknown) {
       console.error('Error creando tarea:', err);
@@ -88,7 +91,7 @@ export const useTasks = () => {
   // Eliminar tarea
   const deleteTask = useCallback(async (taskId: number): Promise<void> => {
     try {
-      await tasksAPI.delete(taskId);
+      await tasksService.delete(taskId);
       dispatch({ type: 'delete', id: taskId });
     } catch (err: unknown) {
       console.error('Error eliminando tarea:', err);
@@ -99,7 +102,7 @@ export const useTasks = () => {
   // Actualizar tarea
   const updateTask = useCallback(async (taskId: number, updates: Partial<Task>): Promise<void> => {
     try {
-      const updatedTask = await tasksAPI.update(taskId, updates);
+      const updatedTask = await tasksService.update(taskId, updates);
       dispatch({ type: 'update', id: taskId, updates: updatedTask });
     } catch (err: unknown) {
       console.error('Error actualizando tarea:', err);
@@ -108,19 +111,23 @@ export const useTasks = () => {
   }, []);
 
   // Filtrar tareas
-  const filterTasks = useCallback((selectedTile: number, searchTerm: string): Task[] => {
-    const term = searchTerm.trim().toLowerCase();
-    const byStatus = selectedTile === 0
-      ? tasks.filter((t: Task) => !t.isCompleted)
-      : tasks.filter((t: Task) => t.isCompleted);
-    
-    if (!term) return byStatus;
-    
-    return byStatus.filter((t: Task) =>
-      t.title.toLowerCase().includes(term) ||
-      t.description.toLowerCase().includes(term)
-    );
-  }, [tasks]);
+  const filterTasks = useCallback(
+    (selectedTile: number, searchTerm: string): Task[] => {
+      const term = searchTerm.trim().toLowerCase();
+      const byStatus =
+        selectedTile === 0
+          ? tasks.filter((t: Task) => !t.isCompleted)
+          : tasks.filter((t: Task) => t.isCompleted);
+
+      if (!term) return byStatus;
+
+      return byStatus.filter(
+        (t: Task) =>
+          t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term)
+      );
+    },
+    [tasks]
+  );
 
   // Limpiar error
   const clearError = useCallback(() => {
@@ -136,6 +143,6 @@ export const useTasks = () => {
     deleteTask,
     updateTask,
     filterTasks,
-    clearError
+    clearError,
   };
 };

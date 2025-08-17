@@ -16,7 +16,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onDismiss }
         <button
           onClick={onDismiss}
           className='material-symbols-rounded text-red-500 hover:text-red-700 cursor-pointer transition-colors'
-          title="Cerrar"
+          title='Cerrar'
         >
           close
         </button>

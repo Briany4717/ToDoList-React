@@ -15,7 +15,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   loading,
   selectedTask,
   onToggleTask,
-  onSelectTask
+  onSelectTask,
 }) => {
   if (loading) {
     return (

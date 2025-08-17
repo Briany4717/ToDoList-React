@@ -8,7 +8,7 @@ export const useUIState = () => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<string>('');
   const [newDescription, setNewDescription] = useState<string>('');
-  
+
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus en el modal cuando se abre
@@ -20,7 +20,7 @@ export const useUIState = () => {
 
   // Manejar selección de tareas
   const handleTaskSelection = useCallback((taskId: number): void => {
-    setSelectedTask(prev => prev === taskId ? null : taskId);
+    setSelectedTask((prev) => (prev === taskId ? null : taskId));
   }, []);
 
   // Manejar selección de pestañas
@@ -68,11 +68,11 @@ export const useUIState = () => {
     newTitle,
     newDescription,
     firstInputRef,
-    
+
     // Setters
     setNewTitle,
     setNewDescription,
-    
+
     // Handlers
     handleTaskSelection,
     handleTileSelect,
@@ -80,6 +80,6 @@ export const useUIState = () => {
     handleSearchChange,
     openCreateModal,
     closeCreateModal,
-    resetUIState
+    resetUIState,
   };
 };

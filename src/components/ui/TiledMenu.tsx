@@ -1,11 +1,11 @@
 import React from 'react';
 import { TiledMenuProps } from '../types';
 
-export const TiledMenu: React.FC<TiledMenuProps> = ({ 
-  children, 
-  tiles, 
-  selectedTile, 
-  onSelect 
+export const TiledMenu: React.FC<TiledMenuProps> = ({
+  children,
+  tiles,
+  selectedTile,
+  onSelect,
 }) => {
   return (
     <div className='flex flex-col w-full'>
@@ -14,12 +14,10 @@ export const TiledMenu: React.FC<TiledMenuProps> = ({
           <button
             key={index}
             className={`text-lg px-2 border-b cursor-pointer transition-all duration-200 ease-in-out hover:opacity-75 ${
-              selectedTile === index 
-                ? 'border-black opacity-100' 
-                : 'border-transparent opacity-50'
+              selectedTile === index ? 'border-black opacity-100' : 'border-transparent opacity-50'
             }`}
             onClick={() => onSelect(index)}
-            type="button"
+            type='button'
           >
             {tile}
           </button>

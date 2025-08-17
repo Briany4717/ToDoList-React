@@ -1,7 +1,6 @@
-import express, { Request, Response, Application } from 'express';
 import Database from 'better-sqlite3';
 import cors from 'cors';
-import path from 'path';
+import express, { Application, Request, Response } from 'express';
 
 interface Task {
   id: number;
@@ -28,14 +27,11 @@ interface UpdateTaskRequest {
 const app: Application = express();
 const PORT: number = 3001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Inicializar base de datos
 const db = new Database('tasks.db');
 
-// Crear tabla si no existe
 db.exec(`
   CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,12 +43,11 @@ db.exec(`
   )
 `);
 
-// Insertar datos de ejemplo si la tabla está vacía
 const insertInitialData = (): void => {
   const count = db.prepare('SELECT COUNT(*) as count FROM tasks').get() as { count: number };
   if (count.count === 0) {
     const insert = db.prepare(`
-      INSERT INTO tasks (title, description, isCompleted, accent) 
+      INSERT INTO tasks (title, description, isCompleted, accent)
       VALUES (?, ?, ?, ?)
     `);
 
@@ -140,24 +135,21 @@ const insertInitialData = (): void => {
 
 insertInitialData();
 
-// Preparar queries
 const getAllTasks = db.prepare('SELECT * FROM tasks ORDER BY createdAt DESC');
 const getTaskById = db.prepare('SELECT * FROM tasks WHERE id = ?');
 const insertTask = db.prepare(`
-  INSERT INTO tasks (title, description, isCompleted, accent) 
+  INSERT INTO tasks (title, description, isCompleted, accent)
   VALUES (?, ?, ?, ?)
 `);
 const updateTask = db.prepare(`
-  UPDATE tasks 
-  SET title = ?, description = ?, isCompleted = ?, accent = ? 
+  UPDATE tasks
+  SET title = ?, description = ?, isCompleted = ?, accent = ?
   WHERE id = ?
 `);
 const deleteTask = db.prepare('DELETE FROM tasks WHERE id = ?');
 const toggleTask = db.prepare('UPDATE tasks SET isCompleted = ? WHERE id = ?');
 
-// Rutas API
 
-// GET /api/tasks - Obtener todas las tareas
 app.get('/api/tasks', (req: Request, res: Response) => {
   try {
     const tasks = getAllTasks.all() as Task[];
@@ -171,7 +163,7 @@ app.get('/api/tasks', (req: Request, res: Response) => {
   }
 });
 
-// GET /api/tasks/:id - Obtener una tarea específica
+
 app.get('/api/tasks/:id', (req: Request, res: Response) => {
   try {
     const task = getTaskById.get(req.params.id) as Task | undefined;
@@ -187,7 +179,7 @@ app.get('/api/tasks/:id', (req: Request, res: Response) => {
   }
 });
 
-// POST /api/tasks - Crear nueva tarea
+
 app.post('/api/tasks', (req: Request, res: Response) => {
   try {
     const { title, description = '', accent = '#87a1fd' }: CreateTaskRequest = req.body;
@@ -240,7 +232,6 @@ app.put('/api/tasks/:id', (req: Request, res: Response) => {
   }
 });
 
-// PATCH /api/tasks/:id/toggle - Toggle estado completado
 app.patch('/api/tasks/:id/toggle', (req: Request, res: Response) => {
   try {
     const id: string = req.params.id;
@@ -250,7 +241,7 @@ app.patch('/api/tasks/:id/toggle', (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Tarea no encontrada' });
     }
 
-    const newCompleted = !Boolean(currentTask.isCompleted);
+    const newCompleted = !currentTask.isCompleted;
     const result = toggleTask.run(newCompleted ? 1 : 0, id);
 
     if (result.changes === 0) {
@@ -267,7 +258,6 @@ app.patch('/api/tasks/:id/toggle', (req: Request, res: Response) => {
   }
 });
 
-// DELETE /api/tasks/:id - Eliminar tarea
 app.delete('/api/tasks/:id', (req: Request, res: Response) => {
   try {
     const result = deleteTask.run(req.params.id);
@@ -282,18 +272,15 @@ app.delete('/api/tasks/:id', (req: Request, res: Response) => {
   }
 });
 
-// Manejo de errores 404
 app.use('*', (req: Request, res: Response) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📊 Base de datos: tasks.db`);
 });
 
-// Cerrar DB al terminar proceso
 process.on('exit', () => db.close());
 process.on('SIGHUP', () => process.exit(128 + 1));
 process.on('SIGINT', () => process.exit(128 + 2));
