@@ -23,7 +23,7 @@ export const TiledMenu: React.FC<TiledMenuProps> = ({
           </button>
         ))}
       </div>
-      <div className='flex flex-col h-150 overflow-y-scroll px-6 pt-3 gap-3 border-t-1 border-gray-300 scroll-smooth' style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+      <div className='flex flex-col h-150 overflow-y-scroll px-6 pt-3 gap-3 border-t-1 border-gray-300 scroll-smooth' style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',overflowX: 'auto' }}>
         {children}
       </div>
     </div>

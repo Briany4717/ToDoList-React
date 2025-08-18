@@ -1,8 +1,6 @@
-// Global styles barrel export
 import './App.css';
 import './index.css';
 
-// CSS variables and theme utilities
 export const theme = {
   colors: {
     primary: '#3b82f6',

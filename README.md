@@ -1,155 +1,110 @@
-# TaskManager - React + TypeScript Todo App
+# TaskManager: Aplicación de Lista de Tareas con React y TypeScript
 
-Una aplicación moderna de gestión de tareas construida con React, TypeScript, Vite, y TailwindCSS.
+Esta es una aplicación de gestión de tareas construida con React, TypeScript, Vite y TailwindCSS. Permite a los usuarios administrar sus tareas a través de una interfaz limpia y moderna, con un backend de Express que persiste los datos en una base de datos SQLite.
 
-## 🚀 Características
+## Características Principales
 
-- ✅ **Gestión completa de tareas**: Crear, leer, actualizar y eliminar tareas
-- 🎨 **Interfaz moderna**: Diseño limpio con TailwindCSS y Material Symbols
-- ⚡ **TypeScript**: Tipado estático para mejor experiencia de desarrollo
-- 🔍 **Búsqueda y filtrado**: Busca tareas por título o descripción
-- 🎯 **Estados de tarea**: Separación entre tareas pendientes y completadas
-- 🎨 **Colores personalizados**: Cada tarea tiene un color de acento único
-- 📱 **Diseño responsivo**: Optimizado para diferentes tamaños de pantalla
-- 🗄️ **Base de datos SQLite**: Persistencia de datos local
-- 🔄 **API REST**: Backend Express con endpoints tipados
+- **Gestión de Tareas (CRUD)**: Funcionalidad completa para crear, leer, actualizar y eliminar tareas.
+- **Interfaz Moderna**: Diseño estilizado con TailwindCSS y Material Symbols.
+- **Tipado Estático con TypeScript**: Código robusto y mantenible.
+- **Búsqueda y Filtrado**: Búsqueda por título o descripción y filtrado por estado (pendientes/completadas).
+- **Persistencia de Datos**: Backend con Express.js y base de datos SQLite.
+- **API RESTful**: Endpoints bien definidos para la comunicación entre el cliente y el servidor.
 
-## 🛠️ Tecnologías
+## Tecnologías Utilizadas
 
-### Frontend
-- **React 19** con hooks modernos
-- **TypeScript** para tipado estático
-- **Vite** como build tool
-- **TailwindCSS** para estilos
-- **Material Symbols** para iconografía
-- **Lottie Animations** para efectos visuales
+**Frontend:**
 
-### Backend
-- **Express.js** con TypeScript
-- **Better-sqlite3** para base de datos
-- **CORS** para comunicación cross-origin
+- React 19
+- TypeScript
+- Vite
+- TailwindCSS
+- Material Symbols
+- Lottie para animaciones
 
-## 📦 Instalación
+**Backend:**
 
-1. **Clonar el repositorio**
+- Express.js
+- TypeScript
+- better-sqlite3
+- CORS
+
+## Instalación y Ejecución
+
+Para ejecutar este proyecto localmente, sigue estos pasos:
+
+1. **Clonar el repositorio:**
+
    ```bash
-   git clone [tu-repo-url]
-   cd React-CRUD
+   git clone https://github.com/Briany4717/ToDoList-React.git
+   cd ToDoList-React
    ```
 
-2. **Instalar dependencias**
+2. **Instalar dependencias:**
+
+   Asegúrate de tener Node.js instalado. Luego, ejecuta:
+
    ```bash
    npm install
    ```
 
-3. **Iniciar en modo desarrollo**
+3. **Iniciar el proyecto:**
+
+   Para iniciar tanto el servidor de desarrollo de Vite como el backend de Express simultáneamente, usa:
+
    ```bash
    npm run dev:full
    ```
-   Esto iniciará tanto el servidor backend (puerto 3001) como el frontend (puerto 5173)
 
-## 🧩 Scripts Disponibles
+   - El frontend estará disponible en `http://localhost:5173`.
+   - El backend estará escuchando en `http://localhost:3001`.
 
-- `npm run dev` - Inicia solo el frontend con Vite
-- `npm run server` - Inicia solo el backend con tsx
-- `npm run dev:full` - Inicia frontend y backend concurrentemente
-- `npm run build` - Construye el proyecto para producción
-- `npm run preview` - Vista previa de la build de producción
-- `npm run type-check` - Verifica tipos sin compilar
-- `npm run server:build` - Compila el servidor a JavaScript
+## Scripts Disponibles
 
-## 📁 Estructura del Proyecto
+- `npm run dev`: Inicia el servidor de desarrollo de Vite para el frontend.
+- `npm run server`: Inicia el servidor de Express usando `tsx` para ejecución directa de TypeScript.
+- `npm run dev:full`: Ejecuta los dos scripts anteriores de forma concurrente.
+- `npm run build`: Compila el frontend para producción.
+- `npm run preview`: Sirve la compilación de producción localmente.
+- `npm run server:build`: Compila el código del servidor de TypeScript a JavaScript.
+- `npm run lint`: Analiza el código en busca de errores de linting.
+- `npm run format`: Formatea el código usando Prettier.
 
+## Estructura del Proyecto
+
+El proyecto está organizado de la siguiente manera:
+
+```text
+/
+├── public/               # Archivos estáticos
+├── src/                  # Código fuente del frontend
+│   ├── api/              # Lógica de cliente API (config, client, services)
+│   ├── assets/           # Imágenes, animaciones Lottie, etc.
+│   ├── components/       # Componentes de React (features, layout, ui)
+│   ├── constants/        # Constantes de la aplicación
+│   ├── hooks/            # Hooks personalizados (useTasks, useUIState)
+│   ├── styles/           # Archivos CSS globales
+│   ├── utils/            # Funciones de utilidad
+│   ├── App.tsx           # Componente raíz de la aplicación
+│   ├── main.tsx          # Punto de entrada del frontend
+│   └── types.ts          # Definiciones de tipos de TypeScript
+├── server.ts             # Código del servidor Express
+├── tasks.db              # Base de datos SQLite
+├── package.json          # Dependencias y scripts del proyecto
+└── vite.config.ts        # Configuración de Vite
 ```
-src/
-├── types.ts          # Definiciones de tipos TypeScript
-├── api.ts            # Cliente API con tipos
-├── App.tsx           # Componente principal
-├── main.tsx          # Punto de entrada
-├── TaskListItem.tsx  # Componente de elemento de tarea
-├── CreationModal.tsx # Modal para crear tareas
-├── Calendar.tsx      # Componente calendario (opcional)
-└── assets/           # Recursos estáticos
 
-server.ts             # Servidor Express con TypeScript
-tsconfig.json         # Configuración TypeScript frontend
-tsconfig.server.json  # Configuración TypeScript backend
-```
+## API Endpoints
 
-## 🎯 API Endpoints
+La API del servidor expone los siguientes endpoints para la gestión de tareas:
 
-### Tareas
-- `GET /api/tasks` - Obtener todas las tareas
-- `GET /api/tasks/:id` - Obtener tarea específica
-- `POST /api/tasks` - Crear nueva tarea
-- `PUT /api/tasks/:id` - Actualizar tarea completa
-- `PATCH /api/tasks/:id/toggle` - Toggle estado completado
-- `DELETE /api/tasks/:id` - Eliminar tarea
+- `GET /api/tasks`: Obtiene todas las tareas.
+- `GET /api/tasks/:id`: Obtiene una tarea por su ID.
+- `POST /api/tasks`: Crea una nueva tarea.
+- `PUT /api/tasks/:id`: Actualiza una tarea existente.
+- `PATCH /api/tasks/:id/toggle`: Cambia el estado de completado de una tarea.
+- `DELETE /api/tasks/:id`: Elimina una tarea.
 
-## 🔧 Configuración TypeScript
+## Licencia
 
-El proyecto incluye dos configuraciones de TypeScript:
-
-### Frontend (`tsconfig.json`)
-- **Target**: ES2022
-- **JSX**: react-jsx
-- **Strict mode**: habilitado
-- **Module**: ESNext con resolución Node
-
-### Backend (`tsconfig.server.json`)
-- **Target**: ES2022
-- **Module**: CommonJS
-- **Compilación**: hacia /dist
-
-## 🎨 Características de UI
-
-- **Animaciones suaves**: Transiciones CSS y Lottie
-- **Colores dinámicos**: Sistema de acentos por tarea
-- **Búsqueda en tiempo real**: Filtrado instantáneo
-- **Estados visuales**: Indicadores claros de completado
-- **Diseño adaptativo**: Mobile-first approach
-
-## 🔄 Migración de JavaScript a TypeScript
-
-Este proyecto fue migrado completamente de JavaScript a TypeScript incluyendo:
-
-- ✅ Tipado de todos los componentes React
-- ✅ Interfaces para datos y props
-- ✅ Tipado del servidor Express
-- ✅ Configuración de build actualizada
-- ✅ Manejo de errores tipado
-- ✅ API client con tipos genéricos
-
-## 🚀 Despliegue
-
-Para desplegar en producción:
-
-1. **Frontend**:
-   ```bash
-   npm run build
-   # Los archivos estarán en dist/
-   ```
-
-2. **Backend**:
-   ```bash
-   npm run server:build
-   # El servidor compilado estará en dist/server.js
-   ```
-
-## 📝 Licencia
-
-MIT License - ver archivo [LICENSE](LICENSE) para detalles.
-
-## 🤝 Contribución
-
-Las contribuciones son bienvenidas! Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature
-3. Commit tus cambios
-4. Push a la rama
-5. Abre un Pull Request
-
----
-
-**Desarrollado con ❤️ y TypeScript**
+Este proyecto está bajo la Licencia Pública General de GNU v3.0. Consulta el archivo [LICENSE](LICENSE) para más detalles.

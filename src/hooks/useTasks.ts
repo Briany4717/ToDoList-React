@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
 
-// API
 import { tasksService } from '../api';
 import { generateRandomAccent } from '../api/config';
 
-// Types
-import { Task, TaskAction } from '../../types';
+import { Task, TaskAction } from '../types';
 
-// Reducer para manejar el estado de las tareas
 function tasksReducer(state: Task[], action: TaskAction): Task[] {
   switch (action.type) {
     case 'set_all':
@@ -34,7 +31,6 @@ export const useTasks = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Cargar tareas al inicializar
   useEffect(() => {
     const loadTasks = async () => {
       try {
@@ -53,7 +49,6 @@ export const useTasks = () => {
     loadTasks();
   }, []);
 
-  // Alternar estado de completado
   const toggleTask = useCallback(async (taskId: number): Promise<void> => {
     try {
       const updatedTask = await tasksService.toggle(taskId);
@@ -68,7 +63,6 @@ export const useTasks = () => {
     }
   }, []);
 
-  // Crear nueva tarea
   const createTask = useCallback(async (title: string, description: string): Promise<void> => {
     if (!title.trim()) return;
 
@@ -84,11 +78,10 @@ export const useTasks = () => {
     } catch (err: unknown) {
       console.error('Error creando tarea:', err);
       setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err; // Re-throw para que el componente pueda manejar el error
+      throw err; 
     }
   }, []);
 
-  // Eliminar tarea
   const deleteTask = useCallback(async (taskId: number): Promise<void> => {
     try {
       await tasksService.delete(taskId);
@@ -99,7 +92,6 @@ export const useTasks = () => {
     }
   }, []);
 
-  // Actualizar tarea
   const updateTask = useCallback(async (taskId: number, updates: Partial<Task>): Promise<void> => {
     try {
       const updatedTask = await tasksService.update(taskId, updates);
@@ -110,7 +102,6 @@ export const useTasks = () => {
     }
   }, []);
 
-  // Filtrar tareas
   const filterTasks = useCallback(
     (selectedTile: number, searchTerm: string): Task[] => {
       const term = searchTerm.trim().toLowerCase();
@@ -129,7 +120,6 @@ export const useTasks = () => {
     [tasks]
   );
 
-  // Limpiar error
   const clearError = useCallback(() => {
     setError(null);
   }, []);

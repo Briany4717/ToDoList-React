@@ -1,4 +1,3 @@
-// Tipos para las tareas
 export interface Task {
   id: number;
   title: string;
@@ -9,14 +8,12 @@ export interface Task {
   updatedAt?: string;
 }
 
-// Tipos para crear nuevas tareas
 export interface CreateTaskData {
   title: string;
   description: string;
   accent: string;
 }
 
-// Tipos para actualizar tareas
 export interface UpdateTaskData {
   title?: string;
   description?: string;
@@ -24,7 +21,6 @@ export interface UpdateTaskData {
   isCompleted?: boolean;
 }
 
-// Tipos para las acciones del reducer
 export type TaskAction =
   | { type: 'set_all'; tasks: Task[] }
   | { type: 'toggle'; id: number; isCompleted: boolean }
@@ -32,7 +28,6 @@ export type TaskAction =
   | { type: 'update'; id: number; updates: UpdateTaskData }
   | { type: 'delete'; id: number };
 
-// Tipos para los componentes
 export interface TaskListItemProps {
   id: number;
   title: string;
@@ -80,7 +75,6 @@ export interface CalendarProps {
   selectedDate: Date;
 }
 
-// Tipos para la API
 export interface ApiResponse<T> {
   data?: T;
   error?: string;

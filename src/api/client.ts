@@ -1,6 +1,5 @@
 import { API_BASE_URL, DEFAULT_HEADERS } from './config';
 
-// Generic API request function
 export const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
   const url = `${API_BASE_URL}${endpoint}`;
   const config: RequestInit = {

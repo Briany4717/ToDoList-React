@@ -1,9 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 
-// Styles
 import './styles/App.css';
 
-// Components
 import {
   Calendar,
   CreationModal,
@@ -16,14 +14,11 @@ import {
   TiledMenu,
 } from './components';
 
-// Hooks
 import { useTasks, useUIState } from './hooks';
 
-// Types
 import { Task } from './types';
 
 function App() {
-  // Custom hooks para manejar estado y lógica
   const { tasks, loading, error, toggleTask, createTask, clearError } = useTasks();
 
   const {
@@ -45,7 +40,6 @@ function App() {
     closeCreateModal,
   } = useUIState();
 
-  // Filtrar tareas basado en el estado actual
   const visibleTasks = useMemo((): Task[] => {
     const term = searchTerm.trim().toLowerCase();
     const byStatus =
@@ -61,7 +55,6 @@ function App() {
     );
   }, [tasks, selectedTile, searchTerm]);
 
-  // Manejar creación de tarea
   const handleCreateTask = useCallback(
     async (e: React.FormEvent): Promise<void> => {
       e.preventDefault();
@@ -70,14 +63,12 @@ function App() {
         await createTask(newTitle, newDescription);
         closeCreateModal();
       } catch (err) {
-        // El error ya se maneja en el hook useTasks
         console.error('Error en la creación de tarea:', err);
       }
     },
     [newTitle, newDescription, createTask, closeCreateModal]
   );
 
-  // Obtener tarea seleccionada
   const selectedTaskData = useMemo(
     () => tasks.find((t: Task) => t.id === selectedTask),
     [tasks, selectedTask]
@@ -88,7 +79,6 @@ function App() {
       <NavBar />
 
       <div className='flex justify-between w-screen'>
-        {/* Panel principal de tareas */}
         <div className='flex-1 max-w-3xl pt-2 pl-10'>
           <h2
             className='text-2xl font-normal mb-6 text-gray-800'
@@ -97,13 +87,10 @@ function App() {
             Mis Tareas
           </h2>
 
-          {/* Manejo de errores */}
           {error && <ErrorMessage message={error} onDismiss={clearError} />}
 
-          {/* Barra de búsqueda */}
           <SearchBar value={searchTerm} onChange={handleSearchChange} />
 
-          {/* Menu con pestañas y lista de tareas */}
           <TiledMenu
             tiles={['Por Hacer', 'Completadas']}
             selectedTile={selectedTile}
@@ -119,17 +106,12 @@ function App() {
           </TiledMenu>
         </div>
 
-        {/* Panel lateral derecho */}
         <div className='flex flex-col justify-start pr-8 pt-10'>
           <TaskDetailsCard task={selectedTaskData} />
           <Calendar onDateSelect={handleDateSelect} selectedDate={selectedDate} />
         </div>
       </div>
-
-      {/* Botón flotante para crear tarea */}
       <FloatingButton onClick={openCreateModal} ariaExpanded={showCreateModal} />
-
-      {/* Modal de creación */}
       {showCreateModal && (
         <CreationModal
           handleCreateTask={handleCreateTask}

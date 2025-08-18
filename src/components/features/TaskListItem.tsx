@@ -12,7 +12,8 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
   isSelected,
   onSelect,
 }) => {
-  const [animation, setAnimation] = useState<boolean>(true);
+  const [CompleteAnimation, setCompleteAnimation] = useState<boolean>(false);
+  const [SelectedAnimation, setSelectedAnimation] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const formatDescription = useCallback((text: string): string => {
@@ -20,17 +21,16 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
     return text.length > 100 ? `${text.slice(0, 100)}...` : text;
   }, []);
 
-  
+
 
   const handleToggle = useCallback((): void => {
-    if (!animation) return;
-    setAnimation(false);
+    if (CompleteAnimation) return;
+    setCompleteAnimation(true);
     timeoutRef.current = setTimeout(() => {
       onToggle(id);
-      setAnimation(true);
       timeoutRef.current = null;
-    }, 1200);
-  }, [animation, id, onToggle]);
+    }, 1800);
+  }, [CompleteAnimation, id, onToggle]);
 
   useEffect(() => {
     return () => {
@@ -40,14 +40,28 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
     };
   }, []);
 
+  const handleSelect = useCallback((): void => {
+    if (SelectedAnimation) return;
+    setSelectedAnimation(true);
+    onSelect(id);
+    setTimeout(() => {
+      setSelectedAnimation(false);
+    }, 500);
+  }, [SelectedAnimation, id, onSelect]);
+
+  useEffect(() => {
+      setCompleteAnimation(false);
+  }, [isCompleted]);
+
   return (
     <div
-      onClick={() => onSelect(id)}
-      className={`${animation ? 'shadow-md group' : '-mt-21 opacity-0'} items-center w-full min-h-18 max-h-18 border border-gray-300 rounded-lg flex snap-start ${isCompleted ? '' : 'delay-800'} transition-all duration-300 cursor-pointer relative`}
+      onClick={() => handleSelect()}
+      className={`${CompleteAnimation ? null : 'shadow-md group'} items-center w-full min-h-18 max-h-18 border border-gray-300 rounded-lg flex snap-start ${isCompleted ? '' : 'delay-800'} transition-all duration-300 cursor-pointer relative`}
+      style={{ animation: (SelectedAnimation ? 'TaskListItemSelectionAnimation 500ms cubic-bezier(0.0, 0.0, 0.2, 1) forwards' : null) + (CompleteAnimation ? ',TaskItemCompleteAnimation 800ms cubic-bezier(.68,-0.55,.27,1.55) ' + (isCompleted ? '': '800ms')+' forwards':'') }}
     >
       <span
-        className={`absolute material-symbols-rounded ${isSelected && animation ? '-translate-x-8' : ''} ease-[cubic-bezier(.68,-0.55,.27,1.55)] transition-all duration-200`}
-        style={{ fontSize: '2.0rem', color: isSelected && animation ? accent : 'transparent' }}
+        className={`absolute material-symbols-rounded ${isSelected && !CompleteAnimation ? '-translate-x-8' : ''} ease-[cubic-bezier(.68,-0.55,.27,1.55)] transition-all duration-200`}
+        style={{ fontSize: '2.0rem', color: isSelected && !CompleteAnimation ? accent : 'transparent' }}
       >
         chevron_right
       </span>
@@ -80,20 +94,18 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
             e.stopPropagation();
             handleToggle();
           }}
-          className={`material-symbols-rounded items-center justify-center cursor-pointer ${animation ? 'hover:text-blue-400 hover:scale-110' : ''}
-                        transition-all duration-200 overflow-hidden text-3 ${isCompleted ? (animation ? 'text-green-500' : '') : ''}`}
+          className={`material-symbols-rounded items-center justify-center cursor-pointer ${CompleteAnimation ? null :'hover:text-blue-400 hover:scale-110'}
+                        transition-all duration-200 overflow-hidden text-3 ${isCompleted ? (CompleteAnimation ? null : 'text-green-500') : ''}`}
           style={{ fontSize: '2.0rem', fontVariationSettings: "'FILL' 1" }}
           type='button'
           aria-label={isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'}
         >
           {!isCompleted ? (
-            animation ? (
-              'radio_button_unchecked'
-            ) : (
+            CompleteAnimation ? (
               <DotLottieReact
                 src='src/assets/ou4GUxLpi7.lottie'
                 loop={false}
-                autoplay={!animation}
+                autoplay={CompleteAnimation}
                 speed={1.5}
                 style={{
                   position: 'absolute',
@@ -104,11 +116,13 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
                   zIndex: 2,
                 }}
               />
+            ) : (
+              'radio_button_unchecked'
             )
-          ) : animation ? (
-            'check_circle'
-          ) : (
+          ) : CompleteAnimation ? (
             'radio_button_unchecked'
+          ) : (
+            'check_circle'
           )}
         </button>
       </div>

@@ -11,46 +11,38 @@ export const useUIState = () => {
 
   const firstInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus en el modal cuando se abre
   useEffect(() => {
     if (showCreateModal && firstInputRef.current) {
       firstInputRef.current.focus();
     }
   }, [showCreateModal]);
 
-  // Manejar selección de tareas
   const handleTaskSelection = useCallback((taskId: number): void => {
     setSelectedTask((prev) => (prev === taskId ? null : taskId));
   }, []);
 
-  // Manejar selección de pestañas
   const handleTileSelect = useCallback((index: number): void => {
     setSelectedTile(index);
   }, []);
 
-  // Manejar selección de fecha
   const handleDateSelect = useCallback((date: Date): void => {
     setSelectedDate(date);
   }, []);
 
-  // Abrir modal de creación
   const openCreateModal = useCallback((): void => {
     setShowCreateModal(true);
   }, []);
 
-  // Cerrar modal de creación
   const closeCreateModal = useCallback((): void => {
     setShowCreateModal(false);
     setNewTitle('');
     setNewDescription('');
   }, []);
 
-  // Manejar cambio en término de búsqueda
   const handleSearchChange = useCallback((term: string): void => {
     setSearchTerm(term);
   }, []);
 
-  // Reset de estado de UI
   const resetUIState = useCallback((): void => {
     setSelectedTask(null);
     setSelectedTile(0);
@@ -59,7 +51,6 @@ export const useUIState = () => {
   }, [closeCreateModal]);
 
   return {
-    // State
     selectedTask,
     selectedTile,
     selectedDate,
@@ -69,11 +60,9 @@ export const useUIState = () => {
     newDescription,
     firstInputRef,
 
-    // Setters
     setNewTitle,
     setNewDescription,
 
-    // Handlers
     handleTaskSelection,
     handleTileSelect,
     handleDateSelect,
