@@ -1,6 +1,6 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TaskListItemProps } from '../types';
+import { TaskListItemProps } from '../../types';
 
 export const TaskListItem: React.FC<TaskListItemProps> = ({
   id,
@@ -20,7 +20,10 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
     return text.length > 100 ? `${text.slice(0, 100)}...` : text;
   }, []);
 
+  
+
   const handleToggle = useCallback((): void => {
+    if (!animation) return;
     setAnimation(false);
     timeoutRef.current = setTimeout(() => {
       onToggle(id);
@@ -28,6 +31,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
       timeoutRef.current = null;
     }, 1200);
   }, [animation, id, onToggle]);
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {

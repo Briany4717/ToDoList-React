@@ -84,12 +84,12 @@ function App() {
   );
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='max-h-screen h-screen bg-gray-50'>
       <NavBar />
 
-      <div className='flex justify-between w-screen min-h-screen pt-10'>
+      <div className='flex justify-between w-screen'>
         {/* Panel principal de tareas */}
-        <div className='flex-1 max-w-3xl p-10'>
+        <div className='flex-1 max-w-3xl pt-2 pl-10'>
           <h2
             className='text-2xl font-normal mb-6 text-gray-800'
             style={{ fontFamily: 'system-ui' }}

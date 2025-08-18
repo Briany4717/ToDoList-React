@@ -1,5 +1,5 @@
 import React from 'react';
-import { SearchBarProps } from '../types';
+import { SearchBarProps } from '../../types';
 
 export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
   return (

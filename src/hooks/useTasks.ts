@@ -5,7 +5,7 @@ import { tasksService } from '../api';
 import { generateRandomAccent } from '../api/config';
 
 // Types
-import { Task, TaskAction } from '../types';
+import { Task, TaskAction } from '../../types';
 
 // Reducer para manejar el estado de las tareas
 function tasksReducer(state: Task[], action: TaskAction): Task[] {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { TaskDetailsCardProps } from '../types';
+import { TaskDetailsCardProps } from '../../types';
 
 export const TaskDetailsCard: React.FC<TaskDetailsCardProps> = ({ task }) => {
   if (!task) {
     return (
-      <div className='w-120 mt-12 p-4 rounded-lg border shadow-md border-gray-200'>
+      <div className='w-120 mt-12 p-4 rounded-lg border shadow-md border-gray-300'>
         <div className='flex items-center justify-center h-32 text-gray-500'>
           Selecciona una tarea para ver sus detalles.
         </div>
@@ -15,7 +15,7 @@ export const TaskDetailsCard: React.FC<TaskDetailsCardProps> = ({ task }) => {
   const { title, description, isCompleted, accent } = task;
 
   return (
-    <div className='w-120 mt-12 p-4 rounded-lg border shadow-md border-gray-200'>
+    <div className='w-120 mt-12 p-4 rounded-lg border shadow-md border-gray-300'>
       <div className='flex items-center justify-between mb-4'>
         <div className='flex items-center gap-2'>
           <div className='h-2 w-2 rounded-full' style={{ backgroundColor: accent }} />

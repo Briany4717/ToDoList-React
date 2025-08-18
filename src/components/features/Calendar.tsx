@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CalendarProps } from '../types';
+import { CalendarProps } from '../../types';
 
 export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }) => {
   const [currentDate, setCurrentDate] = useState(new Date());

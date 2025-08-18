@@ -1,5 +1,5 @@
 import React from 'react';
-import { CreationModalProps } from '../types';
+import { CreationModalProps } from '../../types';
 
 export const CreationModal: React.FC<CreationModalProps> = ({
   handleCreateTask,
