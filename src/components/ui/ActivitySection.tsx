@@ -1,3 +1,4 @@
+import { CircularProgress } from '../features/CircularProgress';
 import React from 'react';
 
 export interface ActivitySectionProps {
@@ -8,8 +9,9 @@ export interface ActivitySectionProps {
 
 export const ActivitySection: React.FC<ActivitySectionProps> = () => {
   return (
-    <div className='bg-white rounded-lg shadow-md p-4 border border-gray-200 m-10 w-2/6'>
-      <h3 className='text-lg font-semibold mb-3'>Actividades Recientes</h3>
+    <div className='bg-white rounded-lg shadow-md p-4 border border-gray-300 m-10 w-1/4'>
+      <h3 className='text-lg font-semibold mb-3'>Actividad Reciente</h3>
+      <CircularProgress progress={80}/>
       <ul className='space-y-2'>
 
       </ul>
