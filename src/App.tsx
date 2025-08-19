@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { Suspense, useCallback, useMemo } from 'react';
 
 import './styles/App.css';
 
@@ -90,19 +90,20 @@ function App() {
           {error && <ErrorMessage message={error} onDismiss={clearError} />}
 
           <SearchBar value={searchTerm} onChange={handleSearchChange} />
-
           <TiledMenu
             tiles={['Por Hacer', 'Completadas']}
             selectedTile={selectedTile}
             onSelect={handleTileSelect}
           >
+            <Suspense fallback={<div className='text-gray-500'>Cargando tareas...</div>}>
             <TaskList
               tasks={visibleTasks}
               loading={loading}
               selectedTask={selectedTask}
               onToggleTask={toggleTask}
               onSelectTask={handleTaskSelection}
-            />
+              />
+            </Suspense>
           </TiledMenu>
         </div>
 
