@@ -16,6 +16,7 @@ import {
 
 import { useTasks, useUIState } from './hooks';
 
+import { ActivitySection } from './components/ui/ActivitySection';
 import { Task } from './types';
 
 function App() {
@@ -106,10 +107,11 @@ function App() {
           </TiledMenu>
         </div>
 
-        <div className='flex flex-col justify-start pr-8 pt-10'>
+        <div className='flex flex-col justify-start ml-9 pt-10 '>
           <TaskDetailsCard task={selectedTaskData} />
           <Calendar onDateSelect={handleDateSelect} selectedDate={selectedDate} />
         </div>
+        <ActivitySection />
       </div>
       <FloatingButton onClick={openCreateModal} ariaExpanded={showCreateModal} />
       {showCreateModal && (

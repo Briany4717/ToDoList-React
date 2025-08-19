@@ -56,7 +56,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
   return (
     <div
       onClick={() => handleSelect()}
-      className={`${CompleteAnimation ? null : 'shadow-md group'} items-center w-full min-h-18 max-h-18 border border-gray-300 rounded-lg flex snap-start ${isCompleted ? '' : 'delay-800'} transition-all duration-300 cursor-pointer relative`}
+      className={`${CompleteAnimation ? null : 'shadow-md group'} bg-[#FFFFFF] items-center w-full min-h-18 max-h-18 border border-gray-300 rounded-lg flex snap-start ${isCompleted ? '' : 'delay-800'} transition-all duration-300 cursor-pointer relative`}
       style={{ animation: (SelectedAnimation ? 'TaskListItemSelectionAnimation 500ms cubic-bezier(0.0, 0.0, 0.2, 1) forwards' : null) + (CompleteAnimation ? ',TaskItemCompleteAnimation 800ms cubic-bezier(.68,-0.55,.27,1.55) ' + (isCompleted ? '': '800ms')+' forwards':'') }}
     >
       <span
@@ -66,7 +66,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
         chevron_right
       </span>
 
-      <div className='bg-[#F8F9FA] w-full h-full flex items-center rounded-4xl justify-between pr-6'>
+      <div className=' w-full h-full flex items-center rounded-4xl justify-between pr-6'>
         <div className='flex items-center gap-4 transition-all duration-200'>
           <div
             className={`group-hover:h-10 h-9 w-1 -ml-[0.12rem] rounded-lg transition-all duration-200`}
@@ -82,7 +82,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
               </span>
             </div>
             <span
-              className={`text-sm text-gray-700 pl-1 transition-all duration-200 ${isCompleted ? 'line-through' : ''}`}
+              className={`text-sm text-gray-700 pl-1 transition-all duration-200 text-nowrap ${isCompleted ? 'line-through' : ''}`}
             >
               {formatDescription(description)}
             </span>
