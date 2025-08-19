@@ -1,6 +1,8 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TaskListItemProps } from '../../types';
+const LottieAnimationPath = `${import.meta.env.BASE_URL}ou4GUxLpi7.lottie`;
+
 
 export const TaskListItem: React.FC<TaskListItemProps> = ({
   id,
@@ -103,7 +105,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
           {!isCompleted ? (
             CompleteAnimation ? (
               <DotLottieReact
-                src='src/assets/ou4GUxLpi7.lottie'
+                src = {LottieAnimationPath}
                 loop={false}
                 autoplay={CompleteAnimation}
                 speed={1.5}
