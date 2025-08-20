@@ -1,13 +1,15 @@
 import React from "react";
 
-interface CircularProgressProps {
-    progress?: number;
-    strokeWidth?: number;
-    bgColor?: string;
-    progressColor ?: string;
-}
+type CircularProgressProps = {
+  progress?: number;
+  strokeWidth?: number;
+  bgColor?: string;
+  progressColor?: string;
+  width?: string;
+  height?: string;
+};
 
-export const CircularProgress = ({ progress = 0, strokeWidth = 10, bgColor = '#fcfcfc', progressColor = '#0099FFFF' }: CircularProgressProps) => {
+export const CircularProgress = ({ progress = 0, strokeWidth = 10, bgColor = '#DFDFDFFF', progressColor = '#0099FFFF', width = '100%', height = '100%'}: CircularProgressProps) => {
   
   const viewBoxSize = 100;
   const center = viewBoxSize / 2;
@@ -16,7 +18,7 @@ export const CircularProgress = ({ progress = 0, strokeWidth = 10, bgColor = '#f
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
     return (
-    <div style={{ width: '50%', height: '50%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ width, height, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg
         className="progress-ring"
         viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
@@ -43,10 +45,10 @@ export const CircularProgress = ({ progress = 0, strokeWidth = 10, bgColor = '#f
                 </g>
                 <text
                     x="50%"
-                    y="50%"
+                    y="48%"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    style={{ fontSize: '25', fill: progressColor, fontWeight: 'normal' }}
+                    style={{ fontSize: '30', fill: progressColor, fontWeight: 'lighter' }}
                 >
                     {`${Math.round(progress)}%`}
                 </text>

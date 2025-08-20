@@ -91,7 +91,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
   };
 
   return (
-    <div className='flex flex-col h-min items-center p-6 rounded-4xl m-4 min-w-80 bg-white shadow-sm border border-gray-200'>
+    <div className='flex flex-col h-min items-center p-6 rounded-4xl m-4 min-w-80 bg-white shadow-sm border border-gray-300'>
       <div className='flex items-center justify-between w-full mb-4'>
         <button
           onClick={goToPreviousMonth}

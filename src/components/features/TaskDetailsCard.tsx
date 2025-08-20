@@ -15,11 +15,11 @@ export const TaskDetailsCard: React.FC<TaskDetailsCardProps> = ({ task }) => {
   const { title, description, isCompleted, accent } = task;
 
   return (
-    <div className='w-120 mt-12 p-4 rounded-lg border shadow-md border-gray-300'>
+    <div className='w-120 mt-12 p-4 rounded-lg border shadow-md bg-white border-gray-300'>
       <div className='flex items-center justify-between mb-4'>
         <div className='flex items-center gap-2'>
-          <div className='h-2 w-2 rounded-full' style={{ backgroundColor: accent }} />
-          <h4 className='text-gray-700 text-lg font-semibold'>{title || 'Detalles de la Tarea'}</h4>
+          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: accent }} />
+          <h4 className='text-gray-700 text-2xl font-semibold'>{title || 'Detalles de la Tarea'}</h4>
         </div>
 
         <span
