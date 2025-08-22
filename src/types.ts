@@ -5,7 +5,7 @@ export interface Task {
   accent: string;
   isCompleted: boolean;
   createdAt?: string;
-  updatedAt?: string;
+  dueDate?: string;
 }
 
 export interface CreateTaskData {
@@ -34,6 +34,7 @@ export interface TaskListItemProps {
   description: string;
   accent: string;
   isCompleted: boolean;
+  dueDate?: string;
   onToggle: (id: number) => void;
   isSelected: boolean;
   onSelect: (id: number) => void;

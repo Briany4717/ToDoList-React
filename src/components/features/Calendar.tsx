@@ -26,7 +26,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
   const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
   const daysInMonth = lastDayOfMonth.getDate();
-  const startingDayOfWeek = firstDayOfMonth.getDay(); 
+  const startingDayOfWeek = firstDayOfMonth.getDay();
 
   const adjustedStartingDay = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
 
@@ -91,7 +91,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate }
   };
 
   return (
-    <div className='flex flex-col h-min items-center p-6 rounded-4xl m-4 min-w-80 bg-white shadow-sm border border-gray-300'>
+    <div className='flex flex-col h-min items-center p-6 rounded-lg mt-auto min-w-80 bg-white shadow-sm border border-gray-300'>
       <div className='flex items-center justify-between w-full mb-4'>
         <button
           onClick={goToPreviousMonth}

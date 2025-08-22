@@ -1,9 +1,30 @@
 @import 'tailwindcss';
 
 
+/* Animaciones para badges de fecha */
+@keyframes pulse-gentle {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.date-badge-overdue {
+    animation: pulse-gentle 2s infinite;
+}
+
+.date-badge-today {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
 @keyframes TaskItemCompleteAnimation {
     0% {
-        transform:translateX(0);
+        transform: translateX(0);
         opacity: 1;
     }
 
@@ -32,4 +53,45 @@
     100% {
         transform: scale(1) translateX(0);
     }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes height-change {
+    from {
+        transform: scale(0.98);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-in-out;
+}
+
+.animate-height-change {
+    animation: height-change 0.3s ease-in-out;
+}
+
+.content-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover {
+    transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }

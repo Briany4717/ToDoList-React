@@ -10,6 +10,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
   description,
   accent,
   isCompleted,
+  dueDate,
   onToggle,
   isSelected,
   onSelect,
@@ -23,7 +24,69 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
     return text.length > 100 ? `${text.slice(0, 100)}...` : text;
   }, []);
 
+  const formatDate = useCallback((date?: string): {
+    text: string;
+    status: 'today' | 'tomorrow' | 'overdue' | 'upcoming' | 'yesterday';
+    icon: string;
+  } => {
+    if (!date) return { text: '', status: 'upcoming', icon: '' };
 
+    const targetDate = new Date(date);
+    const today = new Date();
+    const tomorrow = new Date(today.getTime() + 86400000);
+    const yesterday = new Date(today.getTime() - 86400000);
+
+    // Normalizar fechas para comparación (sin horas)
+    const normalizeDate = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const normalizedTarget = normalizeDate(targetDate);
+    const normalizedToday = normalizeDate(today);
+    const normalizedTomorrow = normalizeDate(tomorrow);
+    const normalizedYesterday = normalizeDate(yesterday);
+
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric',
+    };
+
+    if (normalizedTarget.getTime() === normalizedToday.getTime()) {
+      return { text: 'Hoy', status: 'today', icon: 'today' };
+    }
+
+    if (normalizedTarget.getTime() === normalizedTomorrow.getTime()) {
+      return { text: 'Mañana', status: 'tomorrow', icon: 'event' };
+    }
+
+    if (normalizedTarget.getTime() === normalizedYesterday.getTime()) {
+      return { text: 'Ayer', status: 'yesterday', icon: 'schedule' };
+    }
+
+    if (normalizedTarget < normalizedToday) {
+      return {
+        text: targetDate.toLocaleDateString('es-ES', options),
+        status: 'overdue',
+        icon: 'warning'
+      };
+    }
+
+    // Próximos días
+    const diffTime = normalizedTarget.getTime() - normalizedToday.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 7) {
+      const dayName = targetDate.toLocaleDateString('es-ES', { weekday: 'long' });
+      return {
+        text: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+        status: 'upcoming',
+        icon: 'calendar_today'
+      };
+    }
+
+    return {
+      text: targetDate.toLocaleDateString('es-ES', options),
+      status: 'upcoming',
+      icon: 'event'
+    };
+  }, []);
 
   const handleToggle = useCallback((): void => {
     if (CompleteAnimation) return;
@@ -75,16 +138,52 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
             style={{ backgroundColor: accent }}
           />
 
-          <div className='flex flex-col'>
-            <div className='flex items-center'>
+          <div className='flex flex-col flex-1 min-w-0'>
+            <div className='flex items-center w-full'>
+
               <span
-                className={`text-lg font-semibold transition-colors duration-200 ${isCompleted ? 'line-through' : ''}`}
+                className={`text-lg font-semibold transition-colors duration-200 truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}`}
               >
                 {title}
               </span>
+
+        {dueDate && (() => {
+                const dateInfo = formatDate(dueDate);
+                if (!dateInfo.text) return null;
+
+                const statusStyles = {
+                  today: 'bg-blue-100 text-blue-800 border-blue-200',
+                  tomorrow: 'bg-green-100 text-green-800 border-green-200',
+                  overdue: 'bg-red-100 text-red-800 border-red-200',
+                  upcoming: 'bg-gray-100 text-gray-700 border-gray-200',
+                  yesterday: 'bg-orange-100 text-orange-800 border-orange-200'
+                };
+
+                return (
+                  <div className={`
+                    flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium not-hover:hidden
+                    border transition-all duration-200 ml-2 whitespace-nowrap self-start place-self-end
+                    ${statusStyles[dateInfo.status]}
+                    ${isCompleted ? 'opacity-60' : ''}
+                    ${dateInfo.status === 'overdue' ? 'date-badge-overdue' : ''}
+                    ${dateInfo.status === 'today' ? 'date-badge-today' : ''}
+                  `}>
+                    <span
+                      className="material-symbols-rounded text-xs"
+                      style={{ fontSize: '14px' }}
+                    >
+                      {dateInfo.icon}
+                    </span>
+                    <span>{dateInfo.text}</span>
+                  </div>
+                );
+              })()}
             </div>
+
             <span
-              className={`text-sm text-gray-700 pl-1 transition-all duration-200 text-nowrap ${isCompleted ? 'line-through' : ''}`}
+              className={`text-sm pl-1 transition-all duration-200 text-nowrap ${
+                isCompleted ? 'line-through text-gray-400' : 'text-gray-600'
+              }`}
             >
               {formatDescription(description)}
             </span>
@@ -97,11 +196,12 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
             handleToggle();
           }}
           className={`material-symbols-rounded items-center justify-center cursor-pointer ${CompleteAnimation ? null :'hover:text-blue-400 hover:scale-110'}
-                        transition-all duration-200 overflow-hidden text-3 ${isCompleted ? (CompleteAnimation ? null : 'text-green-500') : ''}`}
+                        transition-all duration-200 overflow-hidden text-3 ${isCompleted ? (CompleteAnimation ? null : 'text-green-500') : 'text-gray-400'}`}
           style={{ fontSize: '2.0rem', fontVariationSettings: "'FILL' 1" }}
           type='button'
           aria-label={isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'}
         >
+
           {!isCompleted ? (
             CompleteAnimation ? (
               <DotLottieReact

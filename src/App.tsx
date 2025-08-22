@@ -75,6 +75,9 @@ function App() {
     [tasks, selectedTask]
   );
 
+  const completedTasks = useMemo(() => tasks.filter((t: Task) => t.isCompleted).length, [tasks]);
+  const pendingTasks = useMemo(() => tasks.filter((t: Task) => !t.isCompleted).length, [tasks]);
+
   return (
     <div className='max-h-screen h-screen bg-gray-50'>
       <NavBar />
@@ -82,7 +85,7 @@ function App() {
       <div className='flex justify-between w-screen'>
         <div className='flex-1 max-w-3xl pt-2 pl-10'>
           <h2
-            className='text-2xl font-normal mb-6 text-gray-800'
+            className='text-2xl font-normal mb-1 mt-5 text-gray-800'
             style={{ fontFamily: 'system-ui' }}
           >
             Mis Tareas
@@ -108,11 +111,11 @@ function App() {
           </TiledMenu>
         </div>
 
-        <div className='flex flex-col justify-start ml-9 pt-10 '>
+        <div className='flex flex-col justify-center ml-9 pt-10 '>
           <TaskDetailsCard task={selectedTaskData} />
           <Calendar onDateSelect={handleDateSelect} selectedDate={selectedDate} />
         </div>
-        <ActivitySection />
+        <ActivitySection completedTasks={completedTasks} pendingTasks={pendingTasks} />
       </div>
       <FloatingButton onClick={openCreateModal} ariaExpanded={showCreateModal} />
       {showCreateModal && (

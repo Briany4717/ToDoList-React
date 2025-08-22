@@ -204,7 +204,6 @@ app.post('/api/tasks', (req: Request, res: Response) => {
   }
 });
 
-// PUT /api/tasks/:id - Actualizar tarea completa
 app.put('/api/tasks/:id', (req: Request, res: Response) => {
   try {
     const { title, description, isCompleted, accent, dueDate }: UpdateTaskRequest = req.body;

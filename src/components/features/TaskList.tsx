@@ -46,6 +46,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           description={task.description}
           accent={task.accent}
           isCompleted={task.isCompleted}
+          dueDate={task.dueDate}
           onToggle={onToggleTask}
           isSelected={selectedTask === task.id}
           onSelect={onSelectTask}
