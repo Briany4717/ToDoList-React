@@ -10,6 +10,7 @@ interface Task {
   accent: string;
   createdAt: string;
   dueDate: string;
+  tags?: string; // JSON string de tags
 }
 
 interface CreateTaskRequest {
@@ -17,6 +18,7 @@ interface CreateTaskRequest {
   description?: string;
   accent?: string;
   dueDate?: string;
+  tags?: Array<{ id: string; name: string; color: string }>;
 }
 
 interface UpdateTaskRequest {
@@ -25,6 +27,7 @@ interface UpdateTaskRequest {
   isCompleted?: boolean;
   accent?: string;
   dueDate?: string;
+  tags?: Array<{ id: string; name: string; color: string }>;
 }
 
 const app: Application = express();
@@ -43,9 +46,21 @@ db.exec(`
     isCompleted BOOLEAN DEFAULT 0,
     accent TEXT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    dueDate DATETIME
+    dueDate DATETIME,
+    tags TEXT
   )
 `);
+
+// Migración: Agregar columna tags si no existe
+try {
+  db.exec(`ALTER TABLE tasks ADD COLUMN tags TEXT`);
+  console.log('✅ Columna "tags" agregada a la tabla tasks');
+} catch (error: unknown) {
+  // La columna ya existe, no hacer nada
+  if (error instanceof Error && !error.message.includes('duplicate column name')) {
+    console.error('Error al agregar columna tags:', error);
+  }
+}
 
 const insertInitialData = (): void => {
   const count = db.prepare('SELECT COUNT(*) as count FROM tasks').get() as { count: number };
@@ -142,12 +157,12 @@ insertInitialData();
 const getAllTasks = db.prepare('SELECT * FROM tasks ORDER BY createdAt DESC');
 const getTaskById = db.prepare('SELECT * FROM tasks WHERE id = ?');
 const insertTask = db.prepare(`
-  INSERT INTO tasks (title, description, isCompleted, accent, dueDate)
-  VALUES (?, ?, ?, ?, ?)
+  INSERT INTO tasks (title, description, isCompleted, accent, dueDate, tags)
+  VALUES (?, ?, ?, ?, ?, ?)
 `);
 const updateTask = db.prepare(`
   UPDATE tasks
-  SET title = ?, description = ?, isCompleted = ?, accent = ?, dueDate = ?
+  SET title = ?, description = ?, isCompleted = ?, accent = ?, dueDate = ?, tags = ?
   WHERE id = ?
 `);
 const deleteTask = db.prepare('DELETE FROM tasks WHERE id = ?');
@@ -159,7 +174,8 @@ app.get('/api/tasks', (req: Request, res: Response) => {
     const tasks = getAllTasks.all() as Task[];
     const formattedTasks = tasks.map((task: Task) => ({
       ...task,
-      isCompleted: Boolean(task.isCompleted)
+      isCompleted: Boolean(task.isCompleted),
+      tags: task.tags ? JSON.parse(task.tags) : []
     }));
     res.json(formattedTasks);
   } catch (error: any) {
@@ -176,7 +192,8 @@ app.get('/api/tasks/:id', (req: Request, res: Response) => {
     }
     res.json({
       ...task,
-      isCompleted: Boolean(task.isCompleted)
+      isCompleted: Boolean(task.isCompleted),
+      tags: task.tags ? JSON.parse(task.tags) : []
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -186,18 +203,20 @@ app.get('/api/tasks/:id', (req: Request, res: Response) => {
 
 app.post('/api/tasks', (req: Request, res: Response) => {
   try {
-    const { title, description = '', accent = '#87a1fd', dueDate}: CreateTaskRequest = req.body;
+    const { title, description = '', accent = '#87a1fd', dueDate, tags}: CreateTaskRequest = req.body;
 
     if (!title || title.trim() === '') {
       return res.status(400).json({ error: 'El título es requerido' });
     }
 
-    const result = insertTask.run(title.trim(), description.trim(), 0, accent, dueDate);
+    const tagsJson = tags && tags.length > 0 ? JSON.stringify(tags) : null;
+    const result = insertTask.run(title.trim(), description.trim(), 0, accent, dueDate, tagsJson);
     const newTask = getTaskById.get(result.lastInsertRowid) as Task;
 
     res.status(201).json({
       ...newTask,
-      isCompleted: Boolean(newTask.isCompleted)
+      isCompleted: Boolean(newTask.isCompleted),
+      tags: newTask.tags ? JSON.parse(newTask.tags) : []
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -206,19 +225,21 @@ app.post('/api/tasks', (req: Request, res: Response) => {
 
 app.put('/api/tasks/:id', (req: Request, res: Response) => {
   try {
-    const { title, description, isCompleted, accent, dueDate }: UpdateTaskRequest = req.body;
+    const { title, description, isCompleted, accent, dueDate, tags }: UpdateTaskRequest = req.body;
     const id: string = req.params.id;
 
     if (!title || title.trim() === '') {
       return res.status(400).json({ error: 'El título es requerido' });
     }
 
+    const tagsJson = tags && tags.length > 0 ? JSON.stringify(tags) : null;
     const result = updateTask.run(
       title.trim(),
       description || '',
       isCompleted ? 1 : 0,
       accent || '#87a1fd',
       dueDate,
+      tagsJson,
       id
     );
 
@@ -229,7 +250,8 @@ app.put('/api/tasks/:id', (req: Request, res: Response) => {
     const updatedTask = getTaskById.get(id) as Task;
     res.json({
       ...updatedTask,
-      isCompleted: Boolean(updatedTask.isCompleted)
+      isCompleted: Boolean(updatedTask.isCompleted),
+      tags: updatedTask.tags ? JSON.parse(updatedTask.tags) : []
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -255,7 +277,8 @@ app.patch('/api/tasks/:id/toggle', (req: Request, res: Response) => {
     const updatedTask = getTaskById.get(id) as Task;
     res.json({
       ...updatedTask,
-      isCompleted: Boolean(updatedTask.isCompleted)
+      isCompleted: Boolean(updatedTask.isCompleted),
+      tags: updatedTask.tags ? JSON.parse(updatedTask.tags) : []
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

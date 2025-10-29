@@ -11,6 +11,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
   accent,
   isCompleted,
   dueDate,
+  tags = [],
   onToggle,
   isSelected,
   onSelect,
@@ -139,13 +140,49 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
           />
 
           <div className='flex flex-col flex-1 min-w-0'>
-            <div className='flex items-center w-full'>
+            <div className='flex items-center gap-2 w-full flex-wrap'>
 
               <span
                 className={`text-lg font-semibold transition-colors duration-200 truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}`}
               >
                 {title}
               </span>
+
+              {/* Tags al lado del nombre */}
+              {tags.length > 0 && (
+                <div className='flex flex-wrap gap-1.5'>
+                  {tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag.id}
+                      className={`
+                        flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+                        transition-all duration-200 border
+                        ${isCompleted ? 'opacity-60' : ''}
+                      `}
+                      style={{
+                        backgroundColor: `${tag.color}15`,
+                        borderColor: `${tag.color}40`,
+                        color: tag.color,
+                      }}
+                    >
+                      {tag.icon && (
+                        <span
+                          className='material-symbols-rounded'
+                          style={{ fontSize: '12px', fontVariationSettings: "'FILL' 1" }}
+                        >
+                          {tag.icon}
+                        </span>
+                      )}
+                      {tag.name}
+                    </span>
+                  ))}
+                  {tags.length > 3 && (
+                    <span className='flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200'>
+                      +{tags.length - 3}
+                    </span>
+                  )}
+                </div>
+              )}
 
         {dueDate && (() => {
                 const dateInfo = formatDate(dueDate);
@@ -162,7 +199,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({
                 return (
                   <div className={`
                     flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium not-hover:hidden
-                    border transition-all duration-200 ml-2 whitespace-nowrap self-start place-self-end
+                    border transition-all duration-200 ml-auto whitespace-nowrap self-start
                     ${statusStyles[dateInfo.status]}
                     ${isCompleted ? 'opacity-60' : ''}
                     ${dateInfo.status === 'overdue' ? 'date-badge-overdue' : ''}

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 import { tasksService } from '../api';
 import { generateRandomAccent } from '../api/config';
 
-import { Task, TaskAction } from '../types';
+import { Tag, Task, TaskAction } from '../types';
 
 function tasksReducer(state: Task[], action: TaskAction): Task[] {
   switch (action.type) {
@@ -64,7 +64,7 @@ export const useTasks = () => {
   }, []);
 
   const createTask = useCallback(
-    async (title: string, description: string, dueDate?: string): Promise<void> => {
+    async (title: string, description: string, dueDate?: string, tags?: Tag[]): Promise<void> => {
       if (!title.trim()) return;
 
       try {
@@ -73,6 +73,7 @@ export const useTasks = () => {
           description: description.trim() || 'Sin descripción',
           accent: generateRandomAccent(),
           ...(dueDate && { dueDate }),
+          ...(tags && tags.length > 0 && { tags }),
         };
 
         const createdTask = await tasksService.create(newTask);
@@ -118,7 +119,9 @@ export const useTasks = () => {
 
       return byStatus.filter(
         (t: Task) =>
-          t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term)
+          t.title.toLowerCase().includes(term) ||
+          t.description.toLowerCase().includes(term) ||
+          (t.tags && t.tags.some((tag: Tag) => tag.name.toLowerCase().includes(term)))
       );
     },
     [tasks]

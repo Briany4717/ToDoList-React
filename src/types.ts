@@ -1,3 +1,10 @@
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string; // Material Symbol icon name, o undefined para sin icono
+}
+
 export interface Task {
   id: number;
   title: string;
@@ -6,6 +13,7 @@ export interface Task {
   isCompleted: boolean;
   createdAt?: string;
   dueDate?: string;
+  tags?: Tag[];
 }
 
 export interface CreateTaskData {
@@ -13,6 +21,7 @@ export interface CreateTaskData {
   description: string;
   accent: string;
   dueDate?: string;
+  tags?: Tag[];
 }
 
 export interface UpdateTaskData {
@@ -20,6 +29,8 @@ export interface UpdateTaskData {
   description?: string;
   accent?: string;
   isCompleted?: boolean;
+  dueDate?: string;
+  tags?: Tag[];
 }
 
 export type TaskAction =
@@ -36,6 +47,7 @@ export interface TaskListItemProps {
   accent: string;
   isCompleted: boolean;
   dueDate?: string;
+  tags?: Tag[];
   onToggle: (id: number) => void;
   isSelected: boolean;
   onSelect: (id: number) => void;
@@ -55,6 +67,8 @@ export interface TiledMenuProps {
 
 export interface TaskDetailsCardProps {
   task?: Task | null;
+  onEdit?: (task: Task) => void;
+  onDelete?: (taskId: number) => void;
 }
 
 export interface FloatingButtonProps {
@@ -72,6 +86,10 @@ export interface CreationModalProps {
   setNewDescription: (description: string) => void;
   newDueDate: string;
   setNewDueDate: (date: string) => void;
+  newTags: Tag[];
+  setNewTags: (tags: Tag[]) => void;
+  availableTags: Tag[];
+  onCreateTag: (tag: Tag) => void;
 }
 
 export interface CalendarProps {

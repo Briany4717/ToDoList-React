@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Tag, Task } from '../types';
 
 export const useUIState = () => {
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
@@ -6,9 +7,18 @@ export const useUIState = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
   const [newTitle, setNewTitle] = useState<string>('');
   const [newDescription, setNewDescription] = useState<string>('');
   const [newDueDate, setNewDueDate] = useState<string>('');
+  const [newTags, setNewTags] = useState<Tag[]>([]);
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [editDescription, setEditDescription] = useState<string>('');
+  const [editDueDate, setEditDueDate] = useState<string>('');
+  const [editTags, setEditTags] = useState<Tag[]>([]);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +49,35 @@ export const useUIState = () => {
     setNewTitle('');
     setNewDescription('');
     setNewDueDate('');
+    setNewTags([]);
+  }, []);
+
+  const openEditModal = useCallback((task: Task): void => {
+    setTaskToEdit(task);
+    setEditTitle(task.title);
+    setEditDescription(task.description);
+    setEditDueDate(task.dueDate || '');
+    setEditTags(task.tags || []);
+    setShowEditModal(true);
+  }, []);
+
+  const closeEditModal = useCallback((): void => {
+    setShowEditModal(false);
+    setTaskToEdit(null);
+    setEditTitle('');
+    setEditDescription('');
+    setEditDueDate('');
+    setEditTags([]);
+  }, []);
+
+  const openDeleteModal = useCallback((taskId: number): void => {
+    setTaskToDelete(taskId);
+    setShowDeleteModal(true);
+  }, []);
+
+  const closeDeleteModal = useCallback((): void => {
+    setShowDeleteModal(false);
+    setTaskToDelete(null);
   }, []);
 
   const handleSearchChange = useCallback((term: string): void => {
@@ -58,14 +97,28 @@ export const useUIState = () => {
     selectedDate,
     searchTerm,
     showCreateModal,
+    showEditModal,
+    showDeleteModal,
+    taskToEdit,
+    taskToDelete,
     newTitle,
     newDescription,
     newDueDate,
+    newTags,
+    editTitle,
+    editDescription,
+    editDueDate,
+    editTags,
     firstInputRef,
 
     setNewTitle,
     setNewDescription,
     setNewDueDate,
+    setNewTags,
+    setEditTitle,
+    setEditDescription,
+    setEditDueDate,
+    setEditTags,
 
     handleTaskSelection,
     handleTileSelect,
@@ -73,6 +126,10 @@ export const useUIState = () => {
     handleSearchChange,
     openCreateModal,
     closeCreateModal,
+    openEditModal,
+    closeEditModal,
+    openDeleteModal,
+    closeDeleteModal,
     resetUIState,
   };
 };

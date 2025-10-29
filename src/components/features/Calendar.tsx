@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CalendarProps } from '../../types';
 
 interface DayInfo {
@@ -32,12 +32,12 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate, 
   // Calcular información de tareas por día
   const dayTasksInfo = useMemo(() => {
     const info: Map<number, DayInfo> = new Map();
-    
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dayDate = new Date(currentYear, currentMonth, day);
       const normalizedDayDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
       const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      
+
       const dayTasks = tasks.filter(task => {
         if (!task.dueDate) return false;
         const taskDate = new Date(task.dueDate);
@@ -57,7 +57,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate, 
         hasTodayTasks: isToday && dayTasks.length > 0,
       });
     }
-    
+
     return info;
   }, [tasks, currentMonth, currentYear, daysInMonth, today]);
 
@@ -134,9 +134,9 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate, 
 
   const handleDayClick = (day: number | null): void => {
     if (!day) return;
-    
+
     const clickedDate = new Date(currentYear, currentMonth, day);
-    
+
     // Si se clickea el mismo día, deseleccionar
     if (isSelected(day)) {
       onDateSelect(null);
@@ -151,7 +151,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate, 
 
   const renderDayIndicator = (day: number | null) => {
     if (!day) return null;
-    
+
     const info = dayTasksInfo.get(day);
     if (!info || info.tasksCount === 0) return null;
 
@@ -161,13 +161,13 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate, 
     return (
       <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2 flex gap-0.5">
         {info.hasOverdueTasks ? (
-          <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" 
+          <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"
                title="Tareas vencidas" />
         ) : allCompleted ? (
-          <div className="h-1.5 w-1.5 rounded-full bg-green-500" 
+          <div className="h-1.5 w-1.5 rounded-full bg-green-500"
                title="Todas completadas" />
         ) : hasIncomplete ? (
-          <div className="h-1.5 w-1.5 rounded-full bg-yellow-500" 
+          <div className="h-1.5 w-1.5 rounded-full bg-yellow-500"
                title="Tareas pendientes" />
         ) : null}
       </div>
@@ -306,34 +306,34 @@ export const Calendar: React.FC<CalendarProps> = ({ onDateSelect, selectedDate, 
       <div className='grid grid-cols-7 gap-2 w-full'>
         {calendarDays.map((day, index) => {
           const info = day ? dayTasksInfo.get(day) : null;
-          
+
           return (
             <button
               key={index}
               onClick={() => handleDayClick(day)}
               disabled={!day}
               className={`
-                relative h-10 w-10 flex items-center justify-center text-sm rounded-lg 
+                relative h-10 w-10 flex items-center justify-center text-sm rounded-lg
                 transition-all duration-200 font-medium
                 ${day ? 'cursor-pointer hover:scale-110' : 'cursor-default'}
                 ${isPast(day) && !isToday(day) ? 'opacity-50' : ''}
-                ${day && isToday(day) 
-                  ? 'bg-blue-500 text-white font-bold hover:bg-blue-600 ring-2 ring-blue-300 shadow-md' 
+                ${day && isToday(day)
+                  ? 'bg-blue-500 text-white font-bold hover:bg-blue-600 ring-2 ring-blue-300 shadow-md'
                   : ''}
-                ${day && isSelected(day) && !isToday(day) 
-                  ? 'bg-green-500 text-white font-bold hover:bg-green-600 ring-2 ring-green-300 shadow-md' 
+                ${day && isSelected(day) && !isToday(day)
+                  ? 'bg-green-500 text-white font-bold hover:bg-green-600 ring-2 ring-green-300 shadow-md'
                   : ''}
-                ${day && !isToday(day) && !isSelected(day) 
-                  ? info?.tasksCount 
-                    ? 'text-gray-900 bg-gray-100 hover:bg-gray-200 hover:text-gray-900' 
+                ${day && !isToday(day) && !isSelected(day)
+                  ? info?.tasksCount
+                    ? 'text-gray-900 bg-gray-100 hover:bg-gray-200 hover:text-gray-900'
                     : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                   : ''}
                 disabled:cursor-default disabled:hover:scale-100 disabled:hover:bg-transparent
               `}
               type='button'
               aria-label={day ? `Día ${day}${info?.tasksCount ? ` - ${info.tasksCount} tarea(s)` : ''}` : undefined}
-              title={day && info?.tasksCount 
-                ? `${info.tasksCount} tarea(s): ${info.completedCount} completada(s), ${info.tasksCount - info.completedCount} pendiente(s)` 
+              title={day && info?.tasksCount
+                ? `${info.tasksCount} tarea(s): ${info.completedCount} completada(s), ${info.tasksCount - info.completedCount} pendiente(s)`
                 : undefined}
             >
               {day}

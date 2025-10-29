@@ -1,26 +1,65 @@
-import React, { Suspense, useCallback, useMemo } from 'react';
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
 
 import './styles/App.css';
 
 import {
-  Calendar,
-  CreationModal,
-  ErrorMessage,
-  FloatingButton,
-  NavBar,
-  SearchBar,
-  TaskDetailsCard,
-  TaskList,
-  TiledMenu,
+    Calendar,
+    CreationModal,
+    DeleteConfirmModal,
+    EditModal,
+    ErrorMessage,
+    FloatingButton,
+    NavBar,
+    SearchBar,
+    TaskDetailsCard,
+    TaskList,
+    TiledMenu,
 } from './components';
 
 import { useTasks, useUIState } from './hooks';
 
 import { ActivitySection } from './components/ui/ActivitySection';
-import { Task } from './types';
+import { Tag, Task } from './types';
 
 function App() {
-  const { tasks, loading, error, toggleTask, createTask, clearError } = useTasks();
+  const { tasks, loading, error, toggleTask, createTask, updateTask, deleteTask, clearError } =
+    useTasks();
+
+  // Estado para tags personalizados creados por el usuario
+  const [customTags, setCustomTags] = useState<Tag[]>([]);
+
+  // Extraer todos los tags únicos de todas las tareas + tags personalizados
+  const availableTags = useMemo((): Tag[] => {
+    const tagMap = new Map<string, Tag>();
+
+    // Agregar tags de tareas existentes
+    tasks.forEach((task) => {
+      if (task.tags) {
+        task.tags.forEach((tag) => {
+          if (!tagMap.has(tag.id)) {
+            tagMap.set(tag.id, tag);
+          }
+        });
+      }
+    });
+
+    // Agregar tags personalizados
+    customTags.forEach((tag) => {
+      if (!tagMap.has(tag.id)) {
+        tagMap.set(tag.id, tag);
+      }
+    });
+
+    return Array.from(tagMap.values());
+  }, [tasks, customTags]);
+
+  const handleCreateTag = useCallback((tag: Tag): void => {
+    setCustomTags((prev) => {
+      // Evitar duplicados
+      if (prev.some((t) => t.id === tag.id)) return prev;
+      return [...prev, tag];
+    });
+  }, []);
 
   const {
     selectedTask,
@@ -28,19 +67,37 @@ function App() {
     selectedDate,
     searchTerm,
     showCreateModal,
+    showEditModal,
+    showDeleteModal,
+    taskToEdit,
+    taskToDelete,
     newTitle,
     newDescription,
     newDueDate,
+    newTags,
+    editTitle,
+    editDescription,
+    editDueDate,
+    editTags,
     firstInputRef,
     setNewTitle,
     setNewDescription,
     setNewDueDate,
+    setNewTags,
+    setEditTitle,
+    setEditDescription,
+    setEditDueDate,
+    setEditTags,
     handleTaskSelection,
     handleTileSelect,
     handleDateSelect,
     handleSearchChange,
     openCreateModal,
     closeCreateModal,
+    openEditModal,
+    closeEditModal,
+    openDeleteModal,
+    closeDeleteModal,
   } = useUIState();
 
   const visibleTasks = useMemo((): Task[] => {
@@ -60,7 +117,7 @@ function App() {
         selectedDate.getMonth(),
         selectedDate.getDate()
       );
-      
+
       filtered = filtered.filter((t: Task) => {
         if (!t.dueDate) return false;
         const taskDate = new Date(t.dueDate);
@@ -73,11 +130,13 @@ function App() {
       });
     }
 
-    // Filtrar por término de búsqueda
+    // Filtrar por término de búsqueda (incluye tags)
     if (term) {
       filtered = filtered.filter(
         (t: Task) =>
-          t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term)
+          t.title.toLowerCase().includes(term) ||
+          t.description.toLowerCase().includes(term) ||
+          (t.tags && t.tags.some((tag: Tag) => tag.name.toLowerCase().includes(term)))
       );
     }
 
@@ -89,14 +148,50 @@ function App() {
       e.preventDefault();
 
       try {
-        await createTask(newTitle, newDescription, newDueDate || undefined);
+        await createTask(newTitle, newDescription, newDueDate || undefined, newTags);
         closeCreateModal();
       } catch (err) {
         console.error('Error en la creación de tarea:', err);
       }
     },
-    [newTitle, newDescription, newDueDate, createTask, closeCreateModal]
+    [newTitle, newDescription, newDueDate, newTags, createTask, closeCreateModal]
   );
+
+  const handleEditTask = useCallback(
+    async (e: React.FormEvent): Promise<void> => {
+      e.preventDefault();
+
+      if (!taskToEdit) return;
+
+      try {
+        await updateTask(taskToEdit.id, {
+          title: editTitle,
+          description: editDescription,
+          dueDate: editDueDate || undefined,
+          tags: editTags,
+        });
+        closeEditModal();
+      } catch (err) {
+        console.error('Error en la edición de tarea:', err);
+      }
+    },
+    [taskToEdit, editTitle, editDescription, editDueDate, editTags, updateTask, closeEditModal]
+  );
+
+  const handleDeleteTask = useCallback(async (): Promise<void> => {
+    if (!taskToDelete) return;
+
+    try {
+      await deleteTask(taskToDelete);
+      closeDeleteModal();
+      // Si la tarea eliminada era la seleccionada, limpiar selección
+      if (selectedTask === taskToDelete) {
+        handleTaskSelection(taskToDelete);
+      }
+    } catch (err) {
+      console.error('Error al eliminar tarea:', err);
+    }
+  }, [taskToDelete, deleteTask, closeDeleteModal, selectedTask, handleTaskSelection]);
 
   const selectedTaskData = useMemo(
     () => tasks.find((t: Task) => t.id === selectedTask),
@@ -122,7 +217,7 @@ function App() {
           {error && <ErrorMessage message={error} onDismiss={clearError} />}
 
           <SearchBar value={searchTerm} onChange={handleSearchChange} />
-          
+
           {selectedDate && (
             <div className='mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between date-filter-banner'>
               <div className='flex items-center gap-2'>
@@ -145,7 +240,7 @@ function App() {
               </button>
             </div>
           )}
-          
+
           <TiledMenu
             tiles={['Por Hacer', 'Completadas']}
             selectedTile={selectedTile}
@@ -164,12 +259,17 @@ function App() {
         </div>
 
         <div className='flex flex-col justify-center ml-9 pt-10 '>
-          <TaskDetailsCard task={selectedTaskData} />
+          <TaskDetailsCard
+            task={selectedTaskData}
+            onEdit={openEditModal}
+            onDelete={openDeleteModal}
+          />
           <Calendar onDateSelect={handleDateSelect} selectedDate={selectedDate} tasks={tasks} />
         </div>
         <ActivitySection completedTasks={completedTasks} pendingTasks={pendingTasks} />
       </div>
       <FloatingButton onClick={openCreateModal} ariaExpanded={showCreateModal} />
+
       {showCreateModal && (
         <CreationModal
           handleCreateTask={handleCreateTask}
@@ -181,6 +281,36 @@ function App() {
           setNewDescription={setNewDescription}
           newDueDate={newDueDate}
           setNewDueDate={setNewDueDate}
+          newTags={newTags}
+          setNewTags={setNewTags}
+          availableTags={availableTags}
+          onCreateTag={handleCreateTag}
+        />
+      )}
+
+      {showEditModal && taskToEdit && (
+        <EditModal
+          task={taskToEdit}
+          onSave={handleEditTask}
+          onClose={closeEditModal}
+          editTitle={editTitle}
+          setEditTitle={setEditTitle}
+          editDescription={editDescription}
+          setEditDescription={setEditDescription}
+          editDueDate={editDueDate}
+          setEditDueDate={setEditDueDate}
+          editTags={editTags}
+          setEditTags={setEditTags}
+          availableTags={availableTags}
+          onCreateTag={handleCreateTag}
+        />
+      )}
+
+      {showDeleteModal && taskToDelete && (
+        <DeleteConfirmModal
+          taskTitle={tasks.find((t) => t.id === taskToDelete)?.title || 'esta tarea'}
+          onConfirm={handleDeleteTask}
+          onCancel={closeDeleteModal}
         />
       )}
     </div>
