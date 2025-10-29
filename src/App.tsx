@@ -143,6 +143,13 @@ function App() {
     return filtered;
   }, [tasks, selectedTile, searchTerm, selectedDate]);
 
+  // Contar tareas por categoría (Por Hacer / Completadas)
+  const taskCounts = useMemo((): number[] => {
+    const pendingCount = tasks.filter((t: Task) => !t.isCompleted).length;
+    const completedCount = tasks.filter((t: Task) => t.isCompleted).length;
+    return [pendingCount, completedCount];
+  }, [tasks]);
+
   const handleCreateTask = useCallback(
     async (e: React.FormEvent): Promise<void> => {
       e.preventDefault();
@@ -245,6 +252,7 @@ function App() {
             tiles={['Por Hacer', 'Completadas']}
             selectedTile={selectedTile}
             onSelect={handleTileSelect}
+            taskCounts={taskCounts}
           >
             <Suspense fallback={<div className='text-gray-500'>Cargando tareas...</div>}>
             <TaskList

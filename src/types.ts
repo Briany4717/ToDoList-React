@@ -63,6 +63,7 @@ export interface TiledMenuProps {
   tiles: string[];
   selectedTile: number;
   onSelect: (index: number) => void;
+  taskCounts?: number[]; // Array opcional con el conteo de tareas por cada tab
 }
 
 export interface TaskDetailsCardProps {
