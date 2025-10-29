@@ -30,9 +30,11 @@ function App() {
     showCreateModal,
     newTitle,
     newDescription,
+    newDueDate,
     firstInputRef,
     setNewTitle,
     setNewDescription,
+    setNewDueDate,
     handleTaskSelection,
     handleTileSelect,
     handleDateSelect,
@@ -43,31 +45,57 @@ function App() {
 
   const visibleTasks = useMemo((): Task[] => {
     const term = searchTerm.trim().toLowerCase();
-    const byStatus =
+    let filtered = tasks;
+
+    // Filtrar por estado (Por Hacer / Completadas)
+    filtered =
       selectedTile === 0
-        ? tasks.filter((t: Task) => !t.isCompleted)
-        : tasks.filter((t: Task) => t.isCompleted);
+        ? filtered.filter((t: Task) => !t.isCompleted)
+        : filtered.filter((t: Task) => t.isCompleted);
 
-    if (!term) return byStatus;
+    // Filtrar por fecha seleccionada en el calendario
+    if (selectedDate) {
+      const normalizedSelectedDate = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      );
+      
+      filtered = filtered.filter((t: Task) => {
+        if (!t.dueDate) return false;
+        const taskDate = new Date(t.dueDate);
+        const normalizedTaskDate = new Date(
+          taskDate.getFullYear(),
+          taskDate.getMonth(),
+          taskDate.getDate()
+        );
+        return normalizedTaskDate.getTime() === normalizedSelectedDate.getTime();
+      });
+    }
 
-    return byStatus.filter(
-      (t: Task) =>
-        t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term)
-    );
-  }, [tasks, selectedTile, searchTerm]);
+    // Filtrar por término de búsqueda
+    if (term) {
+      filtered = filtered.filter(
+        (t: Task) =>
+          t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term)
+      );
+    }
+
+    return filtered;
+  }, [tasks, selectedTile, searchTerm, selectedDate]);
 
   const handleCreateTask = useCallback(
     async (e: React.FormEvent): Promise<void> => {
       e.preventDefault();
 
       try {
-        await createTask(newTitle, newDescription);
+        await createTask(newTitle, newDescription, newDueDate || undefined);
         closeCreateModal();
       } catch (err) {
         console.error('Error en la creación de tarea:', err);
       }
     },
-    [newTitle, newDescription, createTask, closeCreateModal]
+    [newTitle, newDescription, newDueDate, createTask, closeCreateModal]
   );
 
   const selectedTaskData = useMemo(
@@ -94,6 +122,30 @@ function App() {
           {error && <ErrorMessage message={error} onDismiss={clearError} />}
 
           <SearchBar value={searchTerm} onChange={handleSearchChange} />
+          
+          {selectedDate && (
+            <div className='mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between date-filter-banner'>
+              <div className='flex items-center gap-2'>
+                <span className='material-symbols-rounded text-blue-600'>calendar_today</span>
+                <span className='text-sm text-blue-800 font-medium'>
+                  Filtrando tareas del{' '}
+                  {selectedDate.toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+              <button
+                onClick={() => handleDateSelect(null)}
+                className='material-symbols-rounded text-blue-600 hover:text-blue-800 cursor-pointer hover:bg-blue-100 p-1 rounded transition-colors'
+                aria-label='Limpiar filtro de fecha'
+              >
+                close
+              </button>
+            </div>
+          )}
+          
           <TiledMenu
             tiles={['Por Hacer', 'Completadas']}
             selectedTile={selectedTile}
@@ -113,7 +165,7 @@ function App() {
 
         <div className='flex flex-col justify-center ml-9 pt-10 '>
           <TaskDetailsCard task={selectedTaskData} />
-          <Calendar onDateSelect={handleDateSelect} selectedDate={selectedDate} />
+          <Calendar onDateSelect={handleDateSelect} selectedDate={selectedDate} tasks={tasks} />
         </div>
         <ActivitySection completedTasks={completedTasks} pendingTasks={pendingTasks} />
       </div>
@@ -127,6 +179,8 @@ function App() {
           setNewTitle={setNewTitle}
           newDescription={newDescription}
           setNewDescription={setNewDescription}
+          newDueDate={newDueDate}
+          setNewDueDate={setNewDueDate}
         />
       )}
     </div>

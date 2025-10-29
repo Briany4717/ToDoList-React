@@ -12,6 +12,7 @@ export interface CreateTaskData {
   title: string;
   description: string;
   accent: string;
+  dueDate?: string;
 }
 
 export interface UpdateTaskData {
@@ -69,11 +70,14 @@ export interface CreationModalProps {
   setNewTitle: (title: string) => void;
   newDescription: string;
   setNewDescription: (description: string) => void;
+  newDueDate: string;
+  setNewDueDate: (date: string) => void;
 }
 
 export interface CalendarProps {
-  onDateSelect: (date: Date) => void;
-  selectedDate: Date;
+  onDateSelect: (date: Date | null) => void;
+  selectedDate: Date | null;
+  tasks: Task[];
 }
 
 export interface ApiResponse<T> {

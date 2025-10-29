@@ -3,11 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export const useUIState = () => {
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
   const [selectedTile, setSelectedTile] = useState<number>(0);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<string>('');
   const [newDescription, setNewDescription] = useState<string>('');
+  const [newDueDate, setNewDueDate] = useState<string>('');
 
   const firstInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +26,7 @@ export const useUIState = () => {
     setSelectedTile(index);
   }, []);
 
-  const handleDateSelect = useCallback((date: Date): void => {
+  const handleDateSelect = useCallback((date: Date | null): void => {
     setSelectedDate(date);
   }, []);
 
@@ -37,6 +38,7 @@ export const useUIState = () => {
     setShowCreateModal(false);
     setNewTitle('');
     setNewDescription('');
+    setNewDueDate('');
   }, []);
 
   const handleSearchChange = useCallback((term: string): void => {
@@ -58,10 +60,12 @@ export const useUIState = () => {
     showCreateModal,
     newTitle,
     newDescription,
+    newDueDate,
     firstInputRef,
 
     setNewTitle,
     setNewDescription,
+    setNewDueDate,
 
     handleTaskSelection,
     handleTileSelect,

@@ -63,24 +63,28 @@ export const useTasks = () => {
     }
   }, []);
 
-  const createTask = useCallback(async (title: string, description: string): Promise<void> => {
-    if (!title.trim()) return;
+  const createTask = useCallback(
+    async (title: string, description: string, dueDate?: string): Promise<void> => {
+      if (!title.trim()) return;
 
-    try {
-      const newTask = {
-        title: title.trim(),
-        description: description.trim() || 'Sin descripción',
-        accent: generateRandomAccent(),
-      };
+      try {
+        const newTask = {
+          title: title.trim(),
+          description: description.trim() || 'Sin descripción',
+          accent: generateRandomAccent(),
+          ...(dueDate && { dueDate }),
+        };
 
-      const createdTask = await tasksService.create(newTask);
-      dispatch({ type: 'add', task: createdTask });
-    } catch (err: unknown) {
-      console.error('Error creando tarea:', err);
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      throw err; 
-    }
-  }, []);
+        const createdTask = await tasksService.create(newTask);
+        dispatch({ type: 'add', task: createdTask });
+      } catch (err: unknown) {
+        console.error('Error creando tarea:', err);
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+        throw err;
+      }
+    },
+    []
+  );
 
   const deleteTask = useCallback(async (taskId: number): Promise<void> => {
     try {

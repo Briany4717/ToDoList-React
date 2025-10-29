@@ -9,7 +9,11 @@ export const CreationModal: React.FC<CreationModalProps> = ({
   setNewTitle,
   newDescription,
   setNewDescription,
+  newDueDate,
+  setNewDueDate,
 }) => {
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <div className='fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
       <form
@@ -67,6 +71,41 @@ export const CreationModal: React.FC<CreationModalProps> = ({
             />
             <span id='description-hint' className='text-xs text-gray-500'>
               {newDescription.length}/250 caracteres
+            </span>
+          </label>
+
+          <label className='flex flex-col gap-1 text-sm font-medium'>
+            Fecha de vencimiento (opcional)
+            <div className='relative'>
+              <input
+                type='date'
+                value={newDueDate}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setNewDueDate(e.target.value)
+                }
+                min={today}
+                className='w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all'
+                aria-describedby='date-hint'
+              />
+              {newDueDate && (
+                <button
+                  type='button'
+                  onClick={() => setNewDueDate('')}
+                  className='absolute right-2 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 hover:text-gray-600 text-sm'
+                  aria-label='Limpiar fecha'
+                >
+                  close
+                </button>
+              )}
+            </div>
+            <span id='date-hint' className='text-xs text-gray-500'>
+              {newDueDate
+                ? `Vence el ${new Date(newDueDate + 'T00:00:00').toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}`
+                : 'Selecciona una fecha límite para esta tarea'}
             </span>
           </label>
         </div>
